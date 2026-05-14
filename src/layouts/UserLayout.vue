@@ -22,7 +22,7 @@
             :to="'/product/' + item.slug"
             class="flex items-center space-x-4 p-3 hover:bg-gray-50 transition"
           >
-            <img :src="'http://localhost:5000/uploads/' + item.thumbnail" class="w-10 h-10 rounded-lg object-cover" />
+            <img :src="'https://rizwan-store-api.onrender.com/uploads/' + item.thumbnail" class="w-10 h-10 rounded-lg object-cover" />
             <span class="text-sm font-medium">{{ item.title }}</span>
           </router-link>
         </div>
@@ -207,7 +207,7 @@ const submitLead = async () => {
   }
 
   try {
-    await axios.post('http://localhost:5000/api/leads', leadForm.value);
+    await axios.post('https://rizwan-store-api.onrender.com/api/leads', leadForm.value);
     localStorage.setItem('userName', leadForm.value.name);
     localStorage.setItem('userPhone', leadForm.value.phone);
     showPopup.value = false;
@@ -230,7 +230,7 @@ const handleSearch = () => {
 
   searchTimeout = setTimeout(async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/products/suggestions?q=${searchQuery.value}`);
+      const res = await axios.get(`https://rizwan-store-api.onrender.com/api/products/suggestions?q=${searchQuery.value}`);
       suggestions.value = res.data;
     } catch (err) {
       console.error(err);

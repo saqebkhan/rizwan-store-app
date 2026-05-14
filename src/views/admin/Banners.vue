@@ -52,7 +52,7 @@ const form = ref({ title: '', subtitle: '' });
 const file = ref(null);
 
 const fetchBanners = async () => {
-    const res = await axios.get('http://localhost:5000/api/banners/all');
+    const res = await axios.get('https://rizwan-store-api.onrender.com/api/banners/all');
     banners.value = res.data;
 };
 
@@ -69,7 +69,7 @@ const saveBanner = async () => {
         formData.append('subtitle', form.value.subtitle);
         if (file.value) formData.append('image', file.value);
 
-        await axios.post('http://localhost:5000/api/banners', formData);
+        await axios.post('https://rizwan-store-api.onrender.com/api/banners', formData);
         showModal.value = false;
         form.value = { title: '', subtitle: '' };
         file.value = null;
@@ -81,10 +81,10 @@ const saveBanner = async () => {
 
 const deleteBanner = async (id) => {
     if (confirm('Delete banner?')) {
-        await axios.delete(`http://localhost:5000/api/banners/${id}`);
+        await axios.delete(`https://rizwan-store-api.onrender.com/api/banners/${id}`);
         fetchBanners();
     }
 };
 
-const getImage = (url) => `http://localhost:5000/uploads/${url}`;
+const getImage = (url) => `https://rizwan-store-api.onrender.com/uploads/${url}`;
 </script>

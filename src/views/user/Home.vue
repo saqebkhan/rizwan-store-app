@@ -76,9 +76,9 @@ onMounted(async () => {
 
   try {
     const [catRes, prodRes, bannerRes] = await Promise.all([
-      axios.get('http://localhost:5000/api/categories'),
-      axios.get('http://localhost:5000/api/products?featured=true'),
-      axios.get('http://localhost:5000/api/banners')
+      axios.get('https://rizwan-store-api.onrender.com/api/categories'),
+      axios.get('https://rizwan-store-api.onrender.com/api/products?featured=true'),
+      axios.get('https://rizwan-store-api.onrender.com/api/banners')
     ]);
     categories.value = catRes.data;
     featuredProducts.value = prodRes.data;
@@ -97,7 +97,7 @@ onMounted(async () => {
 
 const getImage = (url) => {
   if (!url) return '';
-  return url.startsWith('http') ? url : `http://localhost:5000/uploads/${url}`;
+  return url.startsWith('http') ? url : `https://rizwan-store-api.onrender.com/uploads/${url}`;
 };
 
 

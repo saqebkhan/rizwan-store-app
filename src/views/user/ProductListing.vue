@@ -67,7 +67,7 @@ const filters = ref({
 const fetchProducts = async () => {
   loading.value = true;
   try {
-    const res = await axios.get('http://localhost:5000/api/products', { params: filters.value });
+    const res = await axios.get('https://rizwan-store-api.onrender.com/api/products', { params: filters.value });
     products.value = res.data;
   } catch (err) {
     console.error(err);
@@ -78,7 +78,7 @@ const fetchProducts = async () => {
 
 onMounted(async () => {
   try {
-    const res = await axios.get('http://localhost:5000/api/categories');
+    const res = await axios.get('https://rizwan-store-api.onrender.com/api/categories');
     categories.value = res.data;
   } catch (err) {
     console.error(err);

@@ -154,12 +154,12 @@ const handleGallery = (e, index) => {
 
 
 const fetchProducts = async () => {
-    const res = await axios.get('http://localhost:5000/api/products');
+    const res = await axios.get('https://rizwan-store-api.onrender.com/api/products');
     products.value = res.data;
 };
 
 const fetchCategories = async () => {
-    const res = await axios.get('http://localhost:5000/api/categories');
+    const res = await axios.get('https://rizwan-store-api.onrender.com/api/categories');
     categories.value = res.data;
 };
 
@@ -170,7 +170,7 @@ onMounted(() => {
 
 
 const getImage = (url) => {
-    return url.startsWith('http') ? url : `http://localhost:5000/uploads/${url}`;
+    return url.startsWith('http') ? url : `https://rizwan-store-api.onrender.com/uploads/${url}`;
 };
 
 const openModal = (product = null) => {
@@ -206,9 +206,9 @@ const saveProduct = async () => {
         }
 
         if (editingId.value) {
-            await axios.put(`http://localhost:5000/api/products/${editingId.value}`, formData);
+            await axios.put(`https://rizwan-store-api.onrender.com/api/products/${editingId.value}`, formData);
         } else {
-            await axios.post('http://localhost:5000/api/products', formData);
+            await axios.post('https://rizwan-store-api.onrender.com/api/products', formData);
         }
         showModal.value = false;
         resetForm();
@@ -235,7 +235,7 @@ const resetForm = () => {
 
 const deleteProduct = async (id) => {
     if (confirm('Delete this product?')) {
-        await axios.delete(`http://localhost:5000/api/products/${id}`);
+        await axios.delete(`https://rizwan-store-api.onrender.com/api/products/${id}`);
         fetchProducts();
     }
 };

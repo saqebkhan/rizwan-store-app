@@ -49,7 +49,7 @@ const cartStore = useCartStore();
 const imageUrl = computed(() => {
   return props.product.thumbnail.startsWith('http') 
     ? props.product.thumbnail 
-    : `http://localhost:5000/uploads/${props.product.thumbnail}`;
+    : `https://rizwan-store-api.onrender.com/uploads/${props.product.thumbnail}`;
 });
 
 const addToCart = () => {

@@ -119,7 +119,7 @@ const allImages = computed(() => {
 
 const fetchData = async () => {
   try {
-    const res = await axios.get(`http://localhost:5000/api/products/${route.params.slug}`);
+    const res = await axios.get(`https://rizwan-store-api.onrender.com/api/products/${route.params.slug}`);
     product.value = res.data;
     activeImage.value = product.value.thumbnail;
     
@@ -127,7 +127,7 @@ const fetchData = async () => {
     trackingStore.trackProductView(product.value._id);
 
     // Fetch similar products
-    const simRes = await axios.get(`http://localhost:5000/api/products`, {
+    const simRes = await axios.get(`https://rizwan-store-api.onrender.com/api/products`, {
       params: { category: product.value.category?._id }
     });
     similarProducts.value = simRes.data.filter(p => p._id !== product.value._id);
@@ -145,7 +145,7 @@ watch(() => route.params.slug, () => {
 
 
 const getImage = (url) => {
-  return url.startsWith('http') ? url : `http://localhost:5000/uploads/${url}`;
+  return url.startsWith('http') ? url : `https://rizwan-store-api.onrender.com/uploads/${url}`;
 };
 
 const addToCart = () => {

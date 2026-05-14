@@ -42,7 +42,7 @@ const handleCatImage = (e) => {
 
 const fetchCategories = async () => {
 
-    const res = await axios.get('http://localhost:5000/api/categories');
+    const res = await axios.get('https://rizwan-store-api.onrender.com/api/categories');
     categories.value = res.data;
 };
 
@@ -55,7 +55,7 @@ const createCategory = async () => {
         formData.append('name', newCatName.value);
         if (catImageFile.value) formData.append('image', catImageFile.value);
 
-        await axios.post('http://localhost:5000/api/categories', formData);
+        await axios.post('https://rizwan-store-api.onrender.com/api/categories', formData);
         newCatName.value = '';
         catImageFile.value = null;
         fetchCategories();
@@ -68,6 +68,6 @@ const createCategory = async () => {
 
 
 const getImage = (url) => {
-    return url.startsWith('http') ? url : `http://localhost:5000/uploads/${url}`;
+    return url.startsWith('http') ? url : `https://rizwan-store-api.onrender.com/uploads/${url}`;
 };
 </script>

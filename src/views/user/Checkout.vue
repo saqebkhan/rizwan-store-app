@@ -102,7 +102,7 @@ const form = ref({
 });
 
 const getImage = (url) => {
-  return url.startsWith('http') ? url : `http://localhost:5000/uploads/${url}`;
+  return url.startsWith('http') ? url : `https://rizwan-store-api.onrender.com/uploads/${url}`;
 };
 
 const submitCheckout = async () => {
@@ -124,7 +124,7 @@ const submitCheckout = async () => {
             visitorId: trackingStore.visitorId
         };
         
-        await axios.post('http://localhost:5000/api/inquiries', payload);
+        await axios.post('https://rizwan-store-api.onrender.com/api/inquiries', payload);
         cartStore.clearCart();
         submitted.value = true;
     } catch (err) {

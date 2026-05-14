@@ -70,7 +70,7 @@ import axios from 'axios';
 const inquiries = ref([]);
 
 const fetchInquiries = async () => {
-  const res = await axios.get('http://localhost:5000/api/inquiries');
+  const res = await axios.get('https://rizwan-store-api.onrender.com/api/inquiries');
   inquiries.value = res.data;
 };
 
@@ -83,7 +83,7 @@ const formatDuration = (sec) => {
 };
 
 const updateStatus = async (id, status) => {
-  await axios.patch(`http://localhost:5000/api/inquiries/${id}/status`, { status });
+  await axios.patch(`https://rizwan-store-api.onrender.com/api/inquiries/${id}/status`, { status });
   fetchInquiries();
 };
 

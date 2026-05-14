@@ -71,6 +71,6 @@ import { useCartStore } from '../../stores/useCart';
 const cartStore = useCartStore();
 
 const getImage = (url) => {
-  return url.startsWith('http') ? url : `http://localhost:5000/uploads/${url}`;
+  return url.startsWith('http') ? url : `https://rizwan-store-api.onrender.com/uploads/${url}`;
 };
 </script>

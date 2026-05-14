@@ -39,7 +39,7 @@
         <div class="space-y-4">
           <div v-for="prod in stats.topProducts" :key="prod._id" class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
             <div class="flex items-center space-x-4">
-              <img :src="'http://localhost:5000/uploads/' + prod.thumbnail" class="w-12 h-12 rounded-lg object-cover" />
+              <img :src="'https://rizwan-store-api.onrender.com/uploads/' + prod.thumbnail" class="w-12 h-12 rounded-lg object-cover" />
               <div>
                 <p class="font-bold text-slate-900 truncate max-w-[150px]">{{ prod.title }}</p>
                 <p class="text-xs text-slate-500">{{ prod.viewCount }} views</p>
@@ -70,7 +70,7 @@ const stats = ref({
 
 onMounted(async () => {
   try {
-    const res = await axios.get('http://localhost:5000/api/inquiries/stats');
+    const res = await axios.get('https://rizwan-store-api.onrender.com/api/inquiries/stats');
     stats.value = res.data;
   } catch (error) {
     console.error(error);
