@@ -1,101 +1,121 @@
 <template>
-  <LoadingSpinner v-if="isLoading" />
-  <div v-else class="space-y-8">
-    <LoadingSpinner :show="isSaving" overlay />
-    <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
-      <h1 class="text-3xl font-bold text-slate-900">Leads & Inquiries</h1>
-      <div class="flex space-x-2 w-full md:w-auto">
-        <button class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200 text-sm font-medium hover:bg-gray-50 transition w-full md:w-auto">Export CSV</button>
-      </div>
-    </div>
+  <div class="space-y-12 pb-32">
+    <LoadingSpinner v-if="loading" />
+    <div v-else class="space-y-12">
+      <!-- Header -->
+      <header class="flex flex-col md:flex-row justify-between md:items-end gap-6">
+        <div>
+          <span class="text-primary-600 font-bold uppercase tracking-[0.3em] text-[10px] mb-3 block">Conversion Hub</span>
+          <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Active Interests</h1>
+        </div>
+        <div class="flex space-x-3">
+          <button class="bg-slate-950 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-600 transition-all shadow-xl">
+            Export Ecosystem Data
+          </button>
+        </div>
+      </header>
 
-    <div class="bg-white md:rounded-3xl shadow-sm border-y md:border border-gray-100 overflow-hidden">
-      <!-- Mobile-First Table Layout -->
-      <table class="w-full text-left block md:table">
-        <thead class="bg-slate-50 border-b border-gray-100 hidden md:table-header-group">
-          <tr>
-            <th class="p-6 font-bold text-slate-600">Type</th>
-            <th class="p-6 font-bold text-slate-600">Customer</th>
-            <th class="p-6 font-bold text-slate-600">Details</th>
-            <th class="p-6 font-bold text-slate-600">Tracking / Time</th>
-            <th class="p-6 font-bold text-slate-600">Status</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-50 block md:table-row-group">
-          <tr v-for="item in combinedList" :key="item._id" class="block md:table-row hover:bg-slate-50 transition p-4 md:p-0">
-            <!-- Type Badge -->
-            <td class="p-2 md:p-6 block md:table-cell">
-              <span v-if="item.type === 'Inquiry'" class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">Checkout</span>
-              <span v-else class="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">Popup Lead</span>
-            </td>
-            <!-- Customer -->
-            <td class="p-2 md:p-6 block md:table-cell">
-              <div class="font-bold text-slate-900">{{ item.fullName || item.name }}</div>
-              <div class="text-sm text-slate-500">{{ item.phone }}</div>
-              <div v-if="item.city" class="text-[10px] text-slate-400 mt-1 uppercase">{{ item.city }}, {{ item.state }}</div>
-            </td>
-            <!-- Details -->
-            <td class="p-2 md:p-6 block md:table-cell">
-              <div v-if="item.type === 'Inquiry'">
-                <div class="text-sm">
-                  <span v-for="(p, i) in item.products" :key="i" class="block">
-                    {{ p.name }} (x{{ p.quantity }})
+      <!-- Combined List -->
+      <div class="grid grid-cols-1 gap-6">
+        <div v-for="item in combinedList" :key="item._id" 
+          class="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-50 overflow-hidden hover:shadow-[0_30px_100px_rgba(0,0,0,0.05)] transition-all duration-500 group">
+          <div class="p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+            
+            <!-- Type & Customer Info -->
+            <div class="flex items-start space-x-6">
+              <div class="w-20 h-20 rounded-[1.5rem] flex items-center justify-center flex-shrink-0 shadow-inner"
+                :class="item.type === 'Inquiry' ? 'bg-purple-50 text-purple-600' : 'bg-amber-50 text-amber-600'">
+                <span class="material-icons text-3xl">{{ item.type === 'Inquiry' ? 'shopping_bag' : 'sensors' }}</span>
+              </div>
+              <div>
+                <div class="flex items-center space-x-3 mb-2">
+                  <span class="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm"
+                    :class="item.type === 'Inquiry' ? 'bg-purple-100 text-purple-700' : 'bg-amber-100 text-amber-700'">
+                    {{ item.type === 'Inquiry' ? 'Order Inquiry' : 'Instant Lead' }}
+                  </span>
+                  <span class="text-[10px] text-slate-300 font-bold uppercase tracking-widest">{{ timeAgo(item.createdAt) }}</span>
+                </div>
+                <h3 class="text-2xl font-black text-slate-900 tracking-tight mb-1">{{ item.fullName || item.name }}</h3>
+                <div class="flex items-center space-x-4">
+                  <a :href="'tel:' + item.phone" class="text-sm font-bold text-slate-500 hover:text-primary-600 transition flex items-center gap-1">
+                    <span class="material-icons text-sm">call</span>
+                    {{ item.phone }}
+                  </a>
+                  <span v-if="item.city" class="text-[10px] text-slate-300 font-bold uppercase tracking-widest flex items-center gap-1">
+                    <span class="material-icons text-xs">location_on</span>
+                    {{ item.city }}, {{ item.state }}
                   </span>
                 </div>
-                <div class="mt-2 font-bold text-primary-600">₹{{ item.totalAmount }}</div>
               </div>
-              <div v-else class="text-sm text-slate-500">
-                Awaiting contact
+            </div>
+
+            <!-- Detail Section -->
+            <div class="flex-1 max-w-md">
+              <div v-if="item.type === 'Inquiry'" class="bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100">
+                <div class="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-4 flex items-center justify-between">
+                  <span>Inquiry Selection</span>
+                  <span class="text-primary-600">₹{{ item.totalAmount }}</span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <span v-for="(p, i) in item.products" :key="i" class="text-[10px] font-black text-slate-700 bg-white px-3 py-1.5 rounded-xl border border-slate-100 shadow-sm">
+                    {{ p.name }} <span class="text-slate-300 ml-1">×{{ p.quantity }}</span>
+                  </span>
+                </div>
               </div>
-            </td>
-            <!-- Tracking & Time -->
-            <td class="p-2 md:p-6 block md:table-cell">
-              <div v-if="item.sessionDuration" class="flex items-center space-x-2 text-xs text-slate-600 mb-1">
-                <span class="material-icons text-[16px]">timer</span>
-                <span>{{ formatDuration(item.sessionDuration) }}</span>
+              <div v-else class="flex items-center space-x-4 p-6 bg-slate-50/50 rounded-[2rem] border border-slate-100">
+                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-400 shadow-sm">
+                  <span class="material-icons text-xl">contact_support</span>
+                </div>
+                <div>
+                  <p class="text-xs font-black text-slate-900 tracking-tight">Express Interest Captured</p>
+                  <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Awaiting Initial Contact</p>
+                </div>
               </div>
-              <div class="text-xs text-slate-400">
-                {{ new Date(item.createdAt).toLocaleString() }}
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-4">
+              <div v-if="item.sessionDuration" class="flex items-center space-x-2 bg-slate-900 text-white px-4 py-2 rounded-xl">
+                <span class="material-icons text-xs">timer</span>
+                <span class="text-[10px] font-black uppercase tracking-widest">{{ formatDuration(item.sessionDuration) }}</span>
               </div>
-              <div class="mt-1 text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full inline-block">
-                {{ item.source || 'Direct' }}
-              </div>
-            </td>
-            <!-- Status -->
-            <td class="p-2 md:p-6 block md:table-cell">
+              
               <select v-if="item.type === 'Inquiry'"
                 @change="updateStatus(item._id, $event.target.value)" 
                 :class="statusClass(item.status)"
-                class="text-xs font-bold px-3 py-1 rounded-full outline-none border-none cursor-pointer"
+                class="text-[10px] font-black uppercase tracking-[0.2em] px-6 py-3 rounded-2xl outline-none border-none cursor-pointer shadow-lg transition-all active:scale-95"
               >
                 <option value="pending" :selected="item.status === 'pending'">Pending</option>
                 <option value="contacted" :selected="item.status === 'contacted'">Contacted</option>
                 <option value="completed" :selected="item.status === 'completed'">Completed</option>
               </select>
-              <span v-else class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-500">
-                Lead
-              </span>
-            </td>
-          </tr>
-          <tr v-if="combinedList.length === 0">
-            <td colspan="5" class="p-8 text-center text-slate-400">No leads or inquiries yet.</td>
-          </tr>
-        </tbody>
-      </table>
+              <div v-else class="bg-slate-100 text-slate-400 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-sm">
+                New Prospect
+              </div>
+            </div>
+
+          </div>
+        </div>
+        
+        <div v-if="combinedList.length === 0" class="flex flex-col items-center justify-center py-40 bg-slate-50 rounded-[3rem] border border-dashed border-slate-200">
+          <span class="material-icons text-7xl text-slate-200 mb-6">dynamic_feed</span>
+          <p class="text-slate-400 font-black uppercase tracking-widest text-sm">No activity recorded yet</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import axios from 'axios';
+import { ref, computed, onMounted } from 'vue';
+import { inquiryService, leadService } from '../../services/api';
+import { useToast } from '../../composables/useToast';
 import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 
-const isLoading = ref(false);
-const isSaving = ref(false);
-
+const toast = useToast();
 const inquiries = ref([]);
 const leads = ref([]);
+const loading = ref(false);
 
 const combinedList = computed(() => {
   const merged = [
@@ -107,20 +127,13 @@ const combinedList = computed(() => {
 
 const fetchData = async () => {
   try {
-    isLoading.value = true;
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    const [inqRes, leadRes] = await Promise.all([
-      axios.get(`${API_URL}/api/inquiries`),
-      axios.get(`${API_URL}/api/leads`)
+    const [inqData, leadData] = await Promise.all([
+      inquiryService.getAll(),
+      leadService.getAll()
     ]);
-    inquiries.value = inqRes.data;
-    leads.value = leadRes.data;
-  } catch (error) {
-    console.error(error);
-    alert('Failed to load data.');
-  } finally {
-    isLoading.value = false;
-  }
+    inquiries.value = inqData;
+    leads.value = leadData;
+  } catch (error) {}
 };
 
 onMounted(fetchData);
@@ -128,26 +141,35 @@ onMounted(fetchData);
 const formatDuration = (sec) => {
   if (!sec) return '0m';
   const m = Math.floor(sec / 60);
-  return `${m}m`;
+  return `${m} mins browsing`;
 };
 
 const updateStatus = async (id, status) => {
   try {
-    isSaving.value = true;
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    await axios.patch(`${API_URL}/api/inquiries/${id}/status`, { status });
+    await inquiryService.updateStatus(id, status);
+    toast.success('Status synchronized successfully');
     await fetchData();
-  } catch (error) {
-    console.error(error);
-    alert(error.response?.data?.message || 'Failed to update status.');
-  } finally {
-    isSaving.value = false;
-  }
+  } catch (error) {}
 };
 
 const statusClass = (status) => {
-  if (status === 'completed') return 'bg-green-100 text-green-700';
-  if (status === 'contacted') return 'bg-blue-100 text-blue-700';
-  return 'bg-amber-100 text-amber-700';
+  if (status === 'completed') return 'bg-green-500 text-white shadow-green-500/20';
+  if (status === 'contacted') return 'bg-blue-500 text-white shadow-blue-500/20';
+  return 'bg-amber-500 text-white shadow-amber-500/20';
+};
+
+const timeAgo = (date) => {
+  const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+  let interval = seconds / 31536000;
+  if (interval > 1) return Math.floor(interval) + "y ago";
+  interval = seconds / 2592000;
+  if (interval > 1) return Math.floor(interval) + "mo ago";
+  interval = seconds / 86400;
+  if (interval > 1) return Math.floor(interval) + "d ago";
+  interval = seconds / 3600;
+  if (interval > 1) return Math.floor(interval) + "h ago";
+  interval = seconds / 60;
+  if (interval > 1) return Math.floor(interval) + "m ago";
+  return "just now";
 };
 </script>

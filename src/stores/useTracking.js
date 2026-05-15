@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'https://rizwan-store-api.onrender.com/api';
+const API_BASE = (import.meta.env.VITE_API_URL || 'https://rizwan-store-api.onrender.com') + '/api';
 
 export const useTrackingStore = defineStore('tracking', {
   state: () => ({

@@ -15,7 +15,7 @@
       <!-- Items -->
       <div class="lg:col-span-2 space-y-6">
         <div v-for="item in cartStore.items" :key="item._id" class="flex items-center space-x-6 p-6 bg-white rounded-3xl shadow-sm border border-gray-100 group">
-          <img :src="getImage(item.thumbnail)" class="w-24 h-24 rounded-2xl object-cover" />
+          <img :src="getImageUrl(item.thumbnail)" class="w-24 h-24 rounded-2xl object-cover" />
           <div class="flex-grow">
             <h3 class="font-bold text-lg group-hover:text-primary-600 transition">{{ item.title }}</h3>
             <p class="text-primary-600 font-bold mt-1">₹{{ item.finalPrice }}</p>
@@ -68,9 +68,7 @@
 <script setup>
 import { useCartStore } from '../../stores/useCart';
 
-const cartStore = useCartStore();
+import { getImageUrl } from '../../utils/image';
 
-const getImage = (url) => {
-  return url.startsWith('http') ? url : `https://rizwan-store-api.onrender.com/uploads/${url}`;
-};
+const cartStore = useCartStore();
 </script>

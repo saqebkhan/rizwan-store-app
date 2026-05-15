@@ -1,79 +1,87 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 py-12 relative">
-    <LoadingSpinner :show="isLoading" overlay />
-    <div v-if="submitted" class="text-center py-20 bg-white rounded-3xl shadow-xl max-w-2xl mx-auto">
-        <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+  <div class="max-w-7xl mx-auto px-6 py-12 md:py-20 relative">
+    <LoadingSpinner v-if="loading" overlay />
+    
+    <div v-if="submitted" class="text-center py-32 bg-white rounded-[3rem] shadow-[0_30px_100px_rgba(0,0,0,0.05)] max-w-2xl mx-auto border border-slate-50">
+        <div class="w-24 h-24 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-10 shadow-xl shadow-primary-900/10">
             <span class="material-icons text-5xl">check_circle</span>
         </div>
-        <h1 class="text-3xl font-bold mb-4">Thank You!</h1>
-        <p class="text-gray-500 mb-8 px-8">Your inquiry has been sent to our team. We will contact you shortly on the provided phone number.</p>
-        <router-link to="/" class="bg-primary-600 text-white px-10 py-4 rounded-xl font-bold hover:bg-primary-700 transition">
+        <h1 class="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">Order Confirmed!</h1>
+        <p class="text-slate-500 mb-12 px-12 text-lg font-medium leading-relaxed">Your luxury selection is being prepared. Our concierge will contact you within 15 minutes to finalize delivery details.</p>
+        <router-link to="/" class="bg-slate-900 text-white px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-primary-600 transition-all shadow-2xl inline-block">
             Continue Shopping
         </router-link>
     </div>
 
-    <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+    <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
       <!-- Checkout Form -->
-      <div class="space-y-8">
-        <h1 class="text-3xl font-bold">Shipping Information</h1>
-        <form @submit.prevent="submitCheckout" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="space-y-12">
+        <div>
+          <span class="text-primary-600 font-bold uppercase tracking-[0.3em] text-[10px] mb-3 block">Secure Checkout</span>
+          <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Shipping Details</h1>
+        </div>
+
+        <form @submit.prevent="submitCheckout" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
           <div class="md:col-span-2">
-            <label class="text-sm font-bold text-gray-700">Full Name <span class="text-red-500">*</span></label>
-            <input v-model="form.fullName" required class="w-full mt-2 px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500 outline-none" />
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Full Delivery Name</label>
+            <input v-model="form.fullName" required placeholder="Enter your full name" class="w-full px-6 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-primary-500 outline-none font-bold text-slate-900 transition-all" />
           </div>
 
           <div>
-            <label class="text-sm font-bold text-gray-700">Phone Number <span class="text-red-500">*</span></label>
-            <input v-model="form.phone" type="tel" required pattern="[0-9]{10}" maxlength="10" minlength="10" placeholder="10-digit number" class="w-full mt-2 px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500 outline-none" />
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Primary Phone</label>
+            <input v-model="form.phone" type="tel" required pattern="[0-9]{10}" maxlength="10" minlength="10" placeholder="10-digit number" class="w-full px-6 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-primary-500 outline-none font-bold text-slate-900 transition-all" />
           </div>
 
-
-          <div>
-            <label class="text-sm font-bold text-gray-700">Alternate Phone</label>
-            <input v-model="form.alternatePhone" class="w-full mt-2 px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500 outline-none" />
-          </div>
-          <div class="md:col-span-2">
-            <label class="text-sm font-bold text-gray-700">Full Address <span class="text-red-500">*</span></label>
-            <textarea v-model="form.address" required rows="3" class="w-full mt-2 px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500 outline-none"></textarea>
-          </div>
-
-          <div>
-            <label class="text-sm font-bold text-gray-700">City <span class="text-red-500">*</span></label>
-            <input v-model="form.city" required class="w-full mt-2 px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500 outline-none" />
-          </div>
-
-          <div>
-            <label class="text-sm font-bold text-gray-700">Pincode <span class="text-red-500">*</span></label>
-            <input v-model="form.pincode" required class="w-full mt-2 px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500 outline-none" />
-          </div>
 
           <div class="md:col-span-2">
-            <button type="submit" :disabled="isLoading" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold hover:bg-slate-800 transition shadow-lg transform active:scale-[0.98] disabled:opacity-50">
-              {{ isLoading ? 'Processing...' : 'Confirm Order Inquiry' }}
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Shipping Address</label>
+            <textarea v-model="form.address" required rows="3" placeholder="Flat, Street, Area" class="w-full px-6 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-primary-500 outline-none font-bold text-slate-900 transition-all resize-none"></textarea>
+          </div>
+
+          <div class="md:col-span-2 pt-4">
+            <button type="submit" :disabled="loading" class="w-full bg-slate-900 text-white py-6 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-primary-600 transition-all shadow-[0_20px_50px_rgba(0,0,0,0.15)] transform active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3">
+              {{ loading ? 'Securing Order...' : 'Confirm Order Inquiry' }}
+              <span v-if="!loading" class="material-icons text-lg">verified</span>
             </button>
+            <p class="text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest mt-6">Secure 256-bit SSL Encrypted Transaction</p>
           </div>
         </form>
       </div>
 
-      <!-- Order Summary Card -->
-      <div class="bg-gray-50 p-8 rounded-3xl h-fit border border-gray-100">
-        <h3 class="text-xl font-bold mb-6">In Your Bag</h3>
-        <div class="space-y-6 max-h-[400px] overflow-auto pr-2 mb-8">
-            <div v-for="item in cartStore.items" :key="item._id" class="flex space-x-4">
-                <img :src="getImage(item.thumbnail)" class="w-16 h-16 rounded-xl object-cover border border-white" />
-                <div class="flex-grow">
-                    <p class="font-bold text-sm text-gray-900">{{ item.title }}</p>
-                    <p class="text-xs text-gray-500">Qty: {{ item.quantity }}</p>
-                </div>
-                <p class="font-bold text-sm">₹{{ item.finalPrice * item.quantity }}</p>
-            </div>
-        </div>
-        <div class="border-t border-gray-200 pt-6 space-y-4">
-            <div class="flex justify-between text-gray-600">
-                <span>Total Amount</span>
-                <span class="text-2xl font-bold text-primary-600">₹{{ cartStore.totalAmount }}</span>
-            </div>
-            <p class="text-[10px] text-center text-gray-400">By confirming, you agree to our Terms of Service.</p>
+      <!-- Order Summary -->
+      <div class="lg:sticky lg:top-32 h-fit">
+        <div class="bg-slate-900 text-white p-10 md:p-12 rounded-[3rem] shadow-2xl relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 blur-3xl -mr-32 -mt-32"></div>
+          
+          <h3 class="text-xl font-black uppercase tracking-widest mb-10 relative z-10 flex items-center gap-3">
+            <span class="material-icons text-primary-500">shopping_bag</span>
+            Your Luxury Bag
+          </h3>
+          
+          <div class="space-y-8 max-h-[400px] overflow-auto pr-4 mb-10 scrollbar-hide relative z-10">
+              <div v-for="item in cartStore.items" :key="item._id" class="flex items-center space-x-6 group">
+                  <div class="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10">
+                      <img :src="getImageUrl(item.thumbnail)" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" />
+                  </div>
+                  <div class="flex-grow">
+                      <p class="font-black text-sm tracking-tight mb-1 line-clamp-1">{{ item.title }}</p>
+                      <p class="text-[10px] text-white/40 uppercase tracking-widest font-bold">Qty: {{ item.quantity }}</p>
+                  </div>
+                  <p class="font-black text-lg tracking-tighter">₹{{ item.finalPrice * item.quantity }}</p>
+              </div>
+          </div>
+          
+          <div class="border-t border-white/10 pt-8 space-y-6 relative z-10">
+              <div class="flex justify-between items-end">
+                  <div class="flex flex-col">
+                    <span class="text-[10px] text-white/40 uppercase tracking-widest font-black mb-1">Total Amount</span>
+                    <span class="text-4xl font-black tracking-tighter">₹{{ cartStore.totalAmount }}</span>
+                  </div>
+                  <div class="bg-green-500/10 text-green-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
+                    Free Delivery
+                  </div>
+              </div>
+          </div>
         </div>
       </div>
     </div>
@@ -82,38 +90,32 @@
 
 <script setup>
 import { ref } from 'vue';
-import axios from 'axios';
 import { useCartStore } from '../../stores/useCart';
-import { useTrackingStore } from '../../stores/useTracking';
+import { inquiryService } from '../../services/api';
+import { useToast } from '../../composables/useToast';
+import { getImageUrl } from '../../utils/image';
 import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 
 const cartStore = useCartStore();
-const trackingStore = useTrackingStore();
+const toast = useToast();
+const loading = ref(false);
 
-const isLoading = ref(false);
 const submitted = ref(false);
 const form = ref({
     fullName: localStorage.getItem('userName') || '',
     phone: localStorage.getItem('userPhone') || '',
-    alternatePhone: '',
     address: '',
     city: '',
-    state: 'Maharashtra', // Default
+    state: 'Maharashtra',
     pincode: '',
-    notes: ''
 });
 
-const getImage = (url) => {
-  return url.startsWith('http') ? url : `https://rizwan-store-api.onrender.com/uploads/${url}`;
-};
-
 const submitCheckout = async () => {
-    if (cartStore.items.length === 0) return alert('Cart is empty');
-    if (form.value.phone.length !== 10) return alert('Please enter a valid 10-digit phone number');
+    if (cartStore.items.length === 0) return toast.error('Your bag is empty');
+    if (form.value.phone.length !== 10) return toast.error('10-digit phone number is required');
 
-    
-    isLoading.value = true;
     try {
+        loading.value = true;
         const payload = {
             ...form.value,
             products: cartStore.items.map(i => ({
@@ -123,17 +125,26 @@ const submitCheckout = async () => {
                 price: i.finalPrice
             })),
             totalAmount: cartStore.totalAmount,
-            visitorId: trackingStore.visitorId
+            isAdmin: localStorage.getItem('isAdmin') === 'true'
         };
         
-        await axios.post('https://rizwan-store-api.onrender.com/api/inquiries', payload);
+        await inquiryService.create(payload);
         cartStore.clearCart();
         submitted.value = true;
+        toast.success('Order inquiry sent successfully!');
     } catch (err) {
-        console.error(err);
-        alert('Something went wrong. Please try again.');
     } finally {
-        isLoading.value = false;
+        loading.value = false;
     }
 };
 </script>
+
+<style scoped>
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>
