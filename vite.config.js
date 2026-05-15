@@ -41,6 +41,13 @@ export default defineConfig({
       }
     })
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        codeSplitting: false
+      }
+    }
+  },
   resolve: {
     alias: {
       '@': '/src',
