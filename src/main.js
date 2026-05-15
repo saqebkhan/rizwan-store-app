@@ -4,6 +4,7 @@ import './style.css'
 import App from './App.vue'
 import router from './router'
 import { useTrackingStore } from './stores/useTracking'
+import { registerSW } from 'virtual:pwa-register'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -16,3 +17,8 @@ const trackingStore = useTrackingStore()
 trackingStore.initTracking()
 
 app.mount('#app')
+
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+    registerSW({ immediate: true })
+}
