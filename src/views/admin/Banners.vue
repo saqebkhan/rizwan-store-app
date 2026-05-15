@@ -1,5 +1,7 @@
 <template>
-  <div class="space-y-6">
+  <LoadingSpinner v-if="isLoading" />
+  <div v-else class="space-y-6">
+    <LoadingSpinner :show="isSaving" overlay />
     <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
       <h1 class="text-3xl font-bold">Homepage Banners</h1>
       <button @click="showModal = true" class="bg-primary-600 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center space-x-2">
@@ -45,6 +47,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
+
+const isLoading = ref(false);
+const isSaving = ref(false);
 
 const banners = ref([]);
 const showModal = ref(false);
@@ -52,8 +58,16 @@ const form = ref({ title: '', subtitle: '' });
 const file = ref(null);
 
 const fetchBanners = async () => {
-    const res = await axios.get('https://rizwan-store-api.onrender.com/api/banners/all');
-    banners.value = res.data;
+    try {
+        isLoading.value = true;
+        const res = await axios.get('https://rizwan-store-api.onrender.com/api/banners/all');
+        banners.value = res.data;
+    } catch (error) {
+        console.error(error);
+        alert(error.response?.data?.message || 'Failed to load banners.');
+    } finally {
+        isLoading.value = false;
+    }
 };
 
 onMounted(fetchBanners);
@@ -64,6 +78,7 @@ const handleFile = (e) => {
 
 const saveBanner = async () => {
     try {
+        isSaving.value = true;
         const formData = new FormData();
         formData.append('title', form.value.title);
         formData.append('subtitle', form.value.subtitle);
@@ -73,16 +88,27 @@ const saveBanner = async () => {
         showModal.value = false;
         form.value = { title: '', subtitle: '' };
         file.value = null;
-        fetchBanners();
+        await fetchBanners();
     } catch (err) {
         console.error(err);
+        alert(err.response?.data?.message || 'Failed to save banner.');
+    } finally {
+        isSaving.value = false;
     }
 };
 
 const deleteBanner = async (id) => {
     if (confirm('Delete banner?')) {
-        await axios.delete(`https://rizwan-store-api.onrender.com/api/banners/${id}`);
-        fetchBanners();
+        try {
+            isLoading.value = true;
+            await axios.delete(`https://rizwan-store-api.onrender.com/api/banners/${id}`);
+            await fetchBanners();
+        } catch (error) {
+            console.error(error);
+            alert(error.response?.data?.message || 'Failed to delete banner.');
+        } finally {
+            isLoading.value = false;
+        }
     }
 };
 

@@ -1,5 +1,6 @@
 <template>
-  <div v-if="product" class="max-w-7xl mx-auto px-4 py-12">
+  <LoadingSpinner v-if="isLoading" />
+  <div v-else-if="product" class="max-w-7xl mx-auto px-4 py-12">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
       <!-- Image Gallery -->
       <div class="space-y-4">
@@ -99,7 +100,7 @@ import axios from 'axios';
 import { useCartStore } from '../../stores/useCart';
 import { useTrackingStore } from '../../stores/useTracking';
 import ProductCard from '../../components/user/ProductCard.vue';
-
+import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -110,6 +111,7 @@ const product = ref(null);
 const similarProducts = ref([]);
 const qty = ref(1);
 const activeImage = ref('');
+const isLoading = ref(false);
 
 
 const allImages = computed(() => {
@@ -119,6 +121,7 @@ const allImages = computed(() => {
 
 const fetchData = async () => {
   try {
+    isLoading.value = true;
     const res = await axios.get(`https://rizwan-store-api.onrender.com/api/products/${route.params.slug}`);
     product.value = res.data;
     activeImage.value = product.value.thumbnail;
@@ -133,6 +136,9 @@ const fetchData = async () => {
     similarProducts.value = simRes.data.filter(p => p._id !== product.value._id);
   } catch (err) {
     console.error(err);
+    alert(err.response?.data?.message || 'Failed to fetch product details.');
+  } finally {
+    isLoading.value = false;
   }
 };
 

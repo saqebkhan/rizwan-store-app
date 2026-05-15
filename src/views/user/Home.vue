@@ -1,5 +1,6 @@
 <template>
-  <div class="space-y-16 pb-20">
+  <LoadingSpinner v-if="isLoading" />
+  <div v-else class="space-y-16 pb-20">
     <!-- Hero Carousel -->
     <section class="h-[70vh] bg-slate-900 relative flex items-center overflow-hidden">
       <transition-group name="fade" tag="div" class="absolute inset-0">
@@ -63,18 +64,21 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import ProductCard from '../../components/user/ProductCard.vue';
+import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 
 const router = useRouter();
 const banners = ref([]);
 const categories = ref([]);
 const activeBanner = ref(0);
 const featuredProducts = ref([]);
+const isLoading = ref(false);
 
 
 
 onMounted(async () => {
 
   try {
+    isLoading.value = true;
     const [catRes, prodRes, bannerRes] = await Promise.all([
       axios.get('https://rizwan-store-api.onrender.com/api/categories'),
       axios.get('https://rizwan-store-api.onrender.com/api/products?featured=true'),
@@ -92,6 +96,9 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error(error);
+    alert(error.response?.data?.message || 'Failed to load homepage data.');
+  } finally {
+    isLoading.value = false;
   }
 });
 

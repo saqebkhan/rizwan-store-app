@@ -1,5 +1,7 @@
 <template>
-  <div class="space-y-6">
+  <LoadingSpinner v-if="isLoading" />
+  <div v-else class="space-y-6">
+    <LoadingSpinner :show="isSaving" overlay />
     <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
       <h1 class="text-3xl font-bold">Categories</h1>
       <div class="flex flex-col sm:flex-row md:flex-col lg:flex-row gap-4 items-start sm:items-center">
@@ -31,6 +33,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
+
+const isLoading = ref(false);
+const isSaving = ref(false);
 
 const categories = ref([]);
 const newCatName = ref('');
@@ -41,9 +47,16 @@ const handleCatImage = (e) => {
 };
 
 const fetchCategories = async () => {
-
-    const res = await axios.get('https://rizwan-store-api.onrender.com/api/categories');
-    categories.value = res.data;
+    try {
+        isLoading.value = true;
+        const res = await axios.get('https://rizwan-store-api.onrender.com/api/categories');
+        categories.value = res.data;
+    } catch (error) {
+        console.error(error);
+        alert(error.response?.data?.message || 'Failed to fetch categories.');
+    } finally {
+        isLoading.value = false;
+    }
 };
 
 onMounted(fetchCategories);
@@ -51,6 +64,7 @@ onMounted(fetchCategories);
 const createCategory = async () => {
     if (!newCatName.value) return;
     try {
+        isSaving.value = true;
         const formData = new FormData();
         formData.append('name', newCatName.value);
         if (catImageFile.value) formData.append('image', catImageFile.value);
@@ -58,10 +72,12 @@ const createCategory = async () => {
         await axios.post('https://rizwan-store-api.onrender.com/api/categories', formData);
         newCatName.value = '';
         catImageFile.value = null;
-        fetchCategories();
+        await fetchCategories();
     } catch (err) {
         console.error(err);
         alert(err.response?.data?.message || 'Error creating category');
+    } finally {
+        isSaving.value = false;
     }
 };
 

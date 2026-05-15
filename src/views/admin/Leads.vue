@@ -1,5 +1,7 @@
 <template>
-  <div class="space-y-8">
+  <LoadingSpinner v-if="isLoading" />
+  <div v-else class="space-y-8">
+    <LoadingSpinner :show="isSaving" overlay />
     <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
       <h1 class="text-3xl font-bold text-slate-900">Leads & Inquiries</h1>
       <div class="flex space-x-2 w-full md:w-auto">
@@ -68,12 +70,24 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
+
+const isLoading = ref(false);
+const isSaving = ref(false);
 
 const inquiries = ref([]);
 
 const fetchInquiries = async () => {
-  const res = await axios.get('https://rizwan-store-api.onrender.com/api/inquiries');
-  inquiries.value = res.data;
+  try {
+    isLoading.value = true;
+    const res = await axios.get('https://rizwan-store-api.onrender.com/api/inquiries');
+    inquiries.value = res.data;
+  } catch (error) {
+    console.error(error);
+    alert(error.response?.data?.message || 'Failed to load inquiries.');
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 onMounted(fetchInquiries);
@@ -85,8 +99,16 @@ const formatDuration = (sec) => {
 };
 
 const updateStatus = async (id, status) => {
-  await axios.patch(`https://rizwan-store-api.onrender.com/api/inquiries/${id}/status`, { status });
-  fetchInquiries();
+  try {
+    isSaving.value = true;
+    await axios.patch(`https://rizwan-store-api.onrender.com/api/inquiries/${id}/status`, { status });
+    await fetchInquiries();
+  } catch (error) {
+    console.error(error);
+    alert(error.response?.data?.message || 'Failed to update status.');
+  } finally {
+    isSaving.value = false;
+  }
 };
 
 const statusClass = (status) => {

@@ -33,8 +33,8 @@
 
       <!-- Product Grid -->
       <div class="md:col-span-3">
-        <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div v-for="i in 6" :key="i" class="bg-gray-100 animate-pulse rounded-2xl aspect-[3/4]"></div>
+        <div v-if="loading" class="flex justify-center items-center py-20">
+          <LoadingSpinner :show="loading" />
         </div>
         <div v-else-if="products.length === 0" class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-100">
           <span class="material-icons text-6xl text-gray-200 mb-4">search_off</span>
@@ -53,6 +53,7 @@ import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import ProductCard from '../../components/user/ProductCard.vue';
+import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 
 const route = useRoute();
 const products = ref([]);
@@ -71,6 +72,7 @@ const fetchProducts = async () => {
     products.value = res.data;
   } catch (err) {
     console.error(err);
+    alert(err.response?.data?.message || 'Failed to fetch products.');
   } finally {
     loading.value = false;
   }
@@ -82,8 +84,9 @@ onMounted(async () => {
     categories.value = res.data;
   } catch (err) {
     console.error(err);
+    alert(err.response?.data?.message || 'Failed to fetch categories.');
   }
-  fetchProducts();
+  await fetchProducts();
 });
 
 watch(filters, fetchProducts, { deep: true });

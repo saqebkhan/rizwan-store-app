@@ -1,5 +1,6 @@
 <template>
-  <div class="space-y-8">
+  <LoadingSpinner v-if="isLoading" />
+  <div v-else class="space-y-8">
     <header class="flex flex-col md:flex-row justify-between md:items-center gap-4">
       <div>
         <h1 class="text-3xl font-bold text-slate-900">Dashboard Overview</h1>
@@ -55,6 +56,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
+import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 import { Bar } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
 
@@ -71,12 +73,18 @@ const stats = ref({
   topProducts: []
 });
 
+const isLoading = ref(false);
+
 onMounted(async () => {
   try {
+    isLoading.value = true;
     const res = await axios.get('https://rizwan-store-api.onrender.com/api/inquiries/stats');
     stats.value = res.data;
   } catch (error) {
     console.error(error);
+    alert(error.response?.data?.message || 'Failed to load dashboard stats.');
+  } finally {
+    isLoading.value = false;
   }
 });
 

@@ -1,5 +1,7 @@
 <template>
-  <div class="space-y-6">
+  <LoadingSpinner v-if="isLoading" />
+  <div v-else class="space-y-6">
+    <LoadingSpinner :show="isSaving" overlay />
     <div class="flex justify-between items-center">
       <h1 class="text-3xl font-bold">Manage Products</h1>
       <button @click="openModal()" class="bg-primary-600 text-white px-6 py-3 rounded-xl font-bold flex items-center space-x-2 hover:bg-primary-700 transition shadow-lg">
@@ -128,6 +130,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
+
+const isLoading = ref(false);
+const isSaving = ref(false);
 
 const products = ref([]);
 const categories = ref([]);
@@ -165,9 +171,16 @@ const fetchCategories = async () => {
     categories.value = res.data;
 };
 
-onMounted(() => {
-    fetchProducts();
-    fetchCategories();
+onMounted(async () => {
+    try {
+        isLoading.value = true;
+        await Promise.all([fetchProducts(), fetchCategories()]);
+    } catch (error) {
+        console.error(error);
+        alert(error.response?.data?.message || 'Failed to load data.');
+    } finally {
+        isLoading.value = false;
+    }
 });
 
 
@@ -192,6 +205,8 @@ const saveProduct = async () => {
             return alert('Please upload a product thumbnail image.');
         }
 
+        isSaving.value = true;
+
         const formData = new FormData();
         Object.keys(form.value).forEach(key => {
             formData.append(key, form.value[key]);
@@ -214,13 +229,15 @@ const saveProduct = async () => {
         }
         showModal.value = false;
         resetForm();
-        fetchProducts();
+        await fetchProducts();
     } catch (err) {
         console.error(err);
         const msg = err.response?.data?.message || '';
         if (msg.includes('thumbnail')) alert('Thumbnail image is required!');
         else if (msg.includes('finalPrice')) alert('Invalid price or discount calculation!');
         else alert(msg || 'Error saving product. Please check all required fields.');
+    } finally {
+        isSaving.value = false;
     }
 };
 
@@ -237,8 +254,16 @@ const resetForm = () => {
 
 const deleteProduct = async (id) => {
     if (confirm('Delete this product?')) {
-        await axios.delete(`https://rizwan-store-api.onrender.com/api/products/${id}`);
-        fetchProducts();
+        try {
+            isLoading.value = true;
+            await axios.delete(`https://rizwan-store-api.onrender.com/api/products/${id}`);
+            await fetchProducts();
+        } catch (error) {
+            console.error(error);
+            alert(error.response?.data?.message || 'Failed to delete product.');
+        } finally {
+            isLoading.value = false;
+        }
     }
 };
 </script>

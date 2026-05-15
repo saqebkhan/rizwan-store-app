@@ -1,5 +1,6 @@
 <template>
-  <div class="min-h-screen flex flex-col">
+  <div class="min-h-screen flex flex-col relative">
+    <LoadingSpinner :show="isLoading" overlay />
     <!-- Navigation -->
     <nav class="glass sticky top-0 z-50 px-4 py-3 flex items-center justify-between">
       <router-link to="/" class="text-2xl font-bold text-primary-600">RizwanStore</router-link>
@@ -168,6 +169,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { useCartStore } from '../stores/useCart';
+import LoadingSpinner from '../components/common/LoadingSpinner.vue';
 
 const router = useRouter();
 const cartStore = useCartStore();
@@ -181,6 +183,7 @@ let searchTimeout = null;
 const showPopup = ref(false);
 const leadForm = ref({ name: '', phone: '' });
 let popupInterval = null;
+const isLoading = ref(false);
 
 const checkLead = () => {
   showPopup.value = true;
@@ -207,15 +210,17 @@ const submitLead = async () => {
   }
 
   try {
+    isLoading.value = true;
     await axios.post('https://rizwan-store-api.onrender.com/api/leads', leadForm.value);
     localStorage.setItem('userName', leadForm.value.name);
     localStorage.setItem('userPhone', leadForm.value.phone);
     showPopup.value = false;
-    // Removed interval clearing to ensure it repeats every 3 mins
     alert('Thank you! Information sent.');
   } catch (err) {
     console.error(err);
-    alert('Failed to send inquiry. Please try again.');
+    alert(err.response?.data?.message || 'Failed to send inquiry. Please try again.');
+  } finally {
+    isLoading.value = false;
   }
 };
 

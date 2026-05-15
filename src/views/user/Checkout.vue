@@ -1,5 +1,6 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 py-12">
+  <div class="max-w-7xl mx-auto px-4 py-12 relative">
+    <LoadingSpinner :show="isLoading" overlay />
     <div v-if="submitted" class="text-center py-20 bg-white rounded-3xl shadow-xl max-w-2xl mx-auto">
         <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
             <span class="material-icons text-5xl">check_circle</span>
@@ -47,8 +48,8 @@
           </div>
 
           <div class="md:col-span-2">
-            <button type="submit" :disabled="loading" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold hover:bg-slate-800 transition shadow-lg transform active:scale-[0.98] disabled:opacity-50">
-              {{ loading ? 'Processing...' : 'Confirm Order Inquiry' }}
+            <button type="submit" :disabled="isLoading" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold hover:bg-slate-800 transition shadow-lg transform active:scale-[0.98] disabled:opacity-50">
+              {{ isLoading ? 'Processing...' : 'Confirm Order Inquiry' }}
             </button>
           </div>
         </form>
@@ -84,11 +85,12 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { useCartStore } from '../../stores/useCart';
 import { useTrackingStore } from '../../stores/useTracking';
+import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 
 const cartStore = useCartStore();
 const trackingStore = useTrackingStore();
 
-const loading = ref(false);
+const isLoading = ref(false);
 const submitted = ref(false);
 const form = ref({
     fullName: localStorage.getItem('userName') || '',
@@ -110,7 +112,7 @@ const submitCheckout = async () => {
     if (form.value.phone.length !== 10) return alert('Please enter a valid 10-digit phone number');
 
     
-    loading.value = true;
+    isLoading.value = true;
     try {
         const payload = {
             ...form.value,
@@ -131,7 +133,7 @@ const submitCheckout = async () => {
         console.error(err);
         alert('Something went wrong. Please try again.');
     } finally {
-        loading.value = false;
+        isLoading.value = false;
     }
 };
 </script>
