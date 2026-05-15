@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-8">
-    <header class="flex justify-between items-center">
+    <header class="flex flex-col md:flex-row justify-between md:items-center gap-4">
       <div>
         <h1 class="text-3xl font-bold text-slate-900">Dashboard Overview</h1>
         <p class="text-slate-500">Real-time store performance and analytics</p>
       </div>
-      <div class="flex items-center space-x-2 text-sm bg-white px-4 py-2 rounded-lg shadow-sm">
-        <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+      <div class="flex items-center space-x-2 text-sm bg-white px-4 py-2 rounded-lg shadow-sm w-fit">
+        <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse shrink-0"></span>
         <span class="font-medium text-slate-600">Live Traffic Tracking</span>
       </div>
     </header>
@@ -29,9 +29,8 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
         <h3 class="text-xl font-bold mb-6">Traffic & Conversion</h3>
-        <div class="h-64 flex items-center justify-center text-slate-400 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-          <!-- Chart Placeholder - In real app, bind to Chart.js -->
-          <p>Conversion Rate Chart (Visitors vs Leads)</p>
+        <div class="h-64 relative w-full">
+          <Bar :data="chartData" :options="chartOptions" v-if="stats.cards.totalSessions !== undefined" />
         </div>
       </div>
       <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
@@ -39,7 +38,7 @@
         <div class="space-y-4">
           <div v-for="prod in stats.topProducts" :key="prod._id" class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
             <div class="flex items-center space-x-4">
-              <img :src="'https://rizwan-store-api.onrender.com/uploads/' + prod.thumbnail" class="w-12 h-12 rounded-lg object-cover" />
+              <img :src="'https://rizwan-store-api.onrender.com/uploads/' + prod.thumbnail" loading="lazy" class="w-12 h-12 rounded-lg object-cover shrink-0" />
               <div>
                 <p class="font-bold text-slate-900 truncate max-w-[150px]">{{ prod.title }}</p>
                 <p class="text-xs text-slate-500">{{ prod.viewCount }} views</p>
@@ -54,8 +53,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
+import { Bar } from 'vue-chartjs';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 const stats = ref({
   cards: {
@@ -90,5 +93,39 @@ const getIcon = (key) => {
 
 const formatKey = (key) => {
   return key.replace(/([A-Z])/g, ' $1');
+};
+
+const chartData = computed(() => ({
+  labels: ['Traffic & Conversion'],
+  datasets: [
+    {
+      label: 'Visitors',
+      backgroundColor: '#cbd5e1', // slate-300
+      data: [stats.value.cards.totalSessions || 0],
+      borderRadius: 6
+    },
+    {
+      label: 'Leads',
+      backgroundColor: '#0ea5e9', // primary-500
+      data: [stats.value.cards.totalInquiries || 0],
+      borderRadius: 6
+    }
+  ]
+}));
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: 'bottom'
+    }
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      ticks: { precision: 0 }
+    }
+  }
 };
 </script>

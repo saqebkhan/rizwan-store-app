@@ -1,15 +1,16 @@
 <template>
   <div class="space-y-8">
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
       <h1 class="text-3xl font-bold text-slate-900">Leads & Inquiries</h1>
-      <div class="flex space-x-2">
-        <button class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200 text-sm font-medium hover:bg-gray-50 transition">Export CSV</button>
+      <div class="flex space-x-2 w-full md:w-auto">
+        <button class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200 text-sm font-medium hover:bg-gray-50 transition w-full md:w-auto">Export CSV</button>
       </div>
     </div>
 
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-      <table class="w-full text-left">
-        <thead class="bg-slate-50 border-b border-gray-100">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left whitespace-nowrap">
+          <thead class="bg-slate-50 border-b border-gray-100">
           <tr>
             <th class="p-6 font-bold text-slate-600">Customer</th>
             <th class="p-6 font-bold text-slate-600">Order Details</th>
@@ -59,6 +60,7 @@
           </tr>
         </tbody>
       </table>
+      </div>
     </div>
   </div>
 </template>

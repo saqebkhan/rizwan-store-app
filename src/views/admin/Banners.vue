@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-6">
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
       <h1 class="text-3xl font-bold">Homepage Banners</h1>
-      <button @click="showModal = true" class="bg-primary-600 text-white px-6 py-3 rounded-xl font-bold flex items-center space-x-2">
+      <button @click="showModal = true" class="bg-primary-600 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center space-x-2">
         <span class="material-icons">add</span>
         <span>Add Banner</span>
       </button>
@@ -10,7 +10,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div v-for="banner in banners" :key="banner._id" class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 group relative">
-        <img :src="getImage(banner.image)" class="w-full h-48 object-cover" />
+        <img :src="getImage(banner.image)" loading="lazy" class="w-full h-48 object-cover" />
         <div class="p-6">
           <h3 class="font-bold text-lg">{{ banner.title || 'No Title' }}</h3>
           <p class="text-sm text-gray-500">{{ banner.subtitle || 'No Subtitle' }}</p>

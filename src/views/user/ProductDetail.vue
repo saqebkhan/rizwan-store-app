@@ -4,7 +4,7 @@
       <!-- Image Gallery -->
       <div class="space-y-4">
         <div class="aspect-square rounded-3xl overflow-hidden glass group cursor-zoom-in">
-          <img :src="getImage(activeImage)" class="w-full h-full object-cover group-hover:scale-125 transition-transform duration-700" />
+          <img :src="getImage(activeImage)" loading="lazy" class="w-full h-full object-cover group-hover:scale-125 transition-transform duration-700" />
         </div>
         <div class="flex space-x-4">
           <button 
@@ -14,7 +14,7 @@
             :class="activeImage === img ? 'ring-2 ring-primary-600' : 'opacity-60'"
             class="w-20 h-20 rounded-xl overflow-hidden transition"
           >
-            <img :src="getImage(img)" class="w-full h-full object-cover" />
+            <img :src="getImage(img)" loading="lazy" class="w-full h-full object-cover" />
           </button>
         </div>
       </div>

@@ -1,13 +1,13 @@
 <template>
   <div class="space-y-6">
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
       <h1 class="text-3xl font-bold">Categories</h1>
-      <div class="flex flex-col space-y-4">
-        <input v-model="newCatName" placeholder="New Category Name" class="px-4 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-primary-500" />
-        <input type="file" @change="handleCatImage" class="text-xs" />
-        <button @click="createCategory" class="bg-primary-600 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center space-x-2 shadow-lg">
+      <div class="flex flex-col sm:flex-row md:flex-col lg:flex-row gap-4 items-start sm:items-center">
+        <input v-model="newCatName" placeholder="New Category Name" class="px-4 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-primary-500 w-full sm:w-auto" />
+        <input type="file" @change="handleCatImage" class="text-xs w-full sm:w-auto" />
+        <button @click="createCategory" class="bg-primary-600 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center space-x-2 shadow-lg w-full sm:w-auto shrink-0">
           <span class="material-icons">add</span>
-          <span>Add Category</span>
+          <span>Add</span>
         </button>
       </div>
 
@@ -15,7 +15,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div v-for="cat in categories" :key="cat._id" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center space-x-4">
-        <img :src="getImage(cat.image)" class="w-16 h-16 rounded-2xl object-cover" />
+        <img :src="getImage(cat.image)" loading="lazy" class="w-16 h-16 rounded-2xl object-cover shrink-0" />
         <div class="flex-grow">
           <h3 class="font-bold text-slate-900">{{ cat.name }}</h3>
           <p class="text-xs text-slate-400">{{ cat.viewCount }} views</p>

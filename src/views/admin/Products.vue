@@ -9,8 +9,9 @@
     </div>
 
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-      <table class="w-full text-left">
-        <thead class="bg-slate-50 border-b border-gray-100">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left whitespace-nowrap">
+          <thead class="bg-slate-50 border-b border-gray-100">
           <tr>
             <th class="p-6 font-bold text-slate-600">Product</th>
             <th class="p-6 font-bold text-slate-600">Category</th>
@@ -21,9 +22,9 @@
         </thead>
         <tbody class="divide-y divide-gray-50">
           <tr v-for="product in products" :key="product._id" class="hover:bg-slate-50 transition">
-            <td class="p-6">
+            <td class="p-6 min-w-[250px]">
               <div class="flex items-center space-x-4">
-                <img :src="getImage(product.thumbnail)" class="w-12 h-12 rounded-lg object-cover" />
+                <img :src="getImage(product.thumbnail)" loading="lazy" class="w-12 h-12 rounded-lg object-cover shrink-0" />
                 <div>
                   <p class="font-bold text-slate-900">{{ product.title }}</p>
                   <p class="text-xs text-slate-400">SKU: {{ product.sku }}</p>
@@ -55,6 +56,7 @@
           </tr>
         </tbody>
       </table>
+      </div>
     </div>
 
     <!-- Modal Placeholder -->

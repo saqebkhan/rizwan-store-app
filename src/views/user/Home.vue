@@ -4,7 +4,7 @@
     <section class="h-[70vh] bg-slate-900 relative flex items-center overflow-hidden">
       <transition-group name="fade" tag="div" class="absolute inset-0">
         <div v-for="(banner, index) in banners" :key="banner._id" v-show="activeBanner === index" class="absolute inset-0">
-          <img :src="getImage(banner.image)" class="w-full h-full object-cover opacity-60" />
+          <img :src="getImage(banner.image)" loading="lazy" class="w-full h-full object-cover opacity-60" />
           <div class="relative z-10 h-full flex flex-col justify-center px-8 md:px-20 text-white max-w-2xl">
             <h1 class="text-5xl md:text-7xl font-bold mb-6 slide-up">{{ banner.title }}</h1>
             <p class="text-xl mb-8 text-gray-300">{{ banner.subtitle }}</p>
@@ -35,7 +35,7 @@
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
         <div v-for="cat in categories" :key="cat._id" @click="router.push('/products?category=' + cat._id)" class="group cursor-pointer">
           <div class="aspect-square rounded-2xl overflow-hidden mb-3">
-            <img :src="getImage(cat.image)" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+            <img :src="getImage(cat.image)" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
           </div>
           <h3 class="font-bold text-center group-hover:text-primary-600">{{ cat.name }}</h3>
         </div>
