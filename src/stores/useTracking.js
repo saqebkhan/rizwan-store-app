@@ -13,6 +13,10 @@ export const useTrackingStore = defineStore('tracking', {
   }),
   actions: {
     initTracking() {
+      // Senior Design: Do not track administrators to maintain clean ecosystem analytics
+      const adminData = localStorage.getItem('auth_admin');
+      if (adminData && JSON.parse(adminData)) return;
+
       if (!this.visitorId) {
         this.visitorId = uuidv4();
         localStorage.setItem('visitorId', this.visitorId);

@@ -20,5 +20,13 @@ app.mount('#app')
 
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
-    registerSW({ immediate: true })
+    registerSW({
+        immediate: true,
+        onNeedRefresh() {
+            window.location.reload()
+        },
+        onOfflineReady() {
+            console.log('Ecosystem offline monitoring ready')
+        }
+    })
 }
