@@ -5,6 +5,7 @@ import App from './App.vue'
 import router from './router'
 import { useTrackingStore } from './stores/useTracking'
 import { registerSW } from 'virtual:pwa-register'
+import { useToast } from './composables/useToast'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -23,7 +24,9 @@ if ('serviceWorker' in navigator) {
     registerSW({
         immediate: true,
         onNeedRefresh() {
-            window.location.reload()
+            const toast = useToast();
+            toast.info('System update available. Refreshing...');
+            setTimeout(() => window.location.reload(), 1500);
         },
         onOfflineReady() {
             console.log('Ecosystem offline monitoring ready')

@@ -196,9 +196,17 @@ const formatDuration = (sec) => {
 };
 
 const updateStatus = async (item, status) => {
-  // Senior Architecture: Optimistic Local State Update (Instant Feedback)
+  // Senior Design: Optimistic State Update on the source arrays to ensure instant reactivity
   const originalStatus = item.status;
-  item.status = status; 
+  
+  // Find and update in the specific source array for perfect reactivity
+  if (item.type === 'Inquiry') {
+    const idx = inquiries.value.findIndex(i => i._id === item._id);
+    if (idx !== -1) inquiries.value[idx].status = status;
+  } else {
+    const idx = leads.value.findIndex(l => l._id === item._id);
+    if (idx !== -1) leads.value[idx].status = status;
+  }
 
   try {
     if (item.type === 'Inquiry') {
@@ -208,8 +216,14 @@ const updateStatus = async (item, status) => {
     }
     toast.success(`${item.type} state synchronized`);
   } catch (error) {
-    // Revert state only if server communication fails
-    item.status = originalStatus; 
+    // Revert source state on failure
+    if (item.type === 'Inquiry') {
+      const idx = inquiries.value.findIndex(i => i._id === item._id);
+      if (idx !== -1) inquiries.value[idx].status = originalStatus;
+    } else {
+      const idx = leads.value.findIndex(l => l._id === item._id);
+      if (idx !== -1) leads.value[idx].status = originalStatus;
+    }
     toast.error('Synchronization failed - State reverted');
   }
 };
