@@ -28,6 +28,7 @@ export const inquiryService = {
 export const leadService = {
   getAll: () => api.get('/api/leads'),
   create: (data) => api.post('/api/leads', data),
+  updateStatus: (id, status) => api.patch(`/api/leads/${id}`, { status }),
 };
 
 export const bannerService = {

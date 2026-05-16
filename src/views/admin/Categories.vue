@@ -53,7 +53,7 @@
               </div>
             </div>
 
-            <button @click="deleteCategory(cat._id)" class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-300 hover:text-primary-600 hover:bg-primary-50 transition-all relative z-10 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 duration-300">
+            <button @click="deleteCategory(cat._id)" class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-300 hover:text-primary-600 hover:bg-primary-50 transition-all relative z-10 md:opacity-0 group-hover:opacity-100 md:translate-y-2 group-hover:translate-y-0 duration-300">
               <span class="material-icons text-xl">delete</span>
             </button>
           </div>
@@ -69,6 +69,7 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
 import { categoryService } from '../../services/api';
 import { useToast } from '../../composables/useToast';
 import { getImageUrl } from '../../utils/image';

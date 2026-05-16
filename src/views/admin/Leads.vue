@@ -6,10 +6,10 @@
       <header class="flex flex-col md:flex-row justify-between md:items-end gap-6">
         <div>
           <span class="text-primary-600 font-bold uppercase tracking-[0.3em] text-[10px] mb-3 block">Conversion Hub</span>
-          <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Active Interests</h1>
+          <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">Active Interests</h1>
         </div>
         <div class="flex space-x-3">
-          <button class="bg-slate-950 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-600 transition-all shadow-xl">
+          <button class="w-full md:w-auto bg-slate-950 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-600 transition-all shadow-xl">
             Export Ecosystem Data
           </button>
         </div>
@@ -19,30 +19,30 @@
       <div class="grid grid-cols-1 gap-6">
         <div v-for="item in combinedList" :key="item._id" 
           class="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-50 overflow-hidden hover:shadow-[0_30px_100px_rgba(0,0,0,0.05)] transition-all duration-500 group">
-          <div class="p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+          <div class="p-6 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
             
             <!-- Type & Customer Info -->
-            <div class="flex items-start space-x-6">
-              <div class="w-20 h-20 rounded-[1.5rem] flex items-center justify-center flex-shrink-0 shadow-inner"
+            <div class="flex items-start space-x-4 md:space-x-6">
+              <div class="w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] flex items-center justify-center flex-shrink-0 shadow-inner"
                 :class="item.type === 'Inquiry' ? 'bg-purple-50 text-purple-600' : 'bg-amber-50 text-amber-600'">
-                <span class="material-icons text-3xl">{{ item.type === 'Inquiry' ? 'shopping_bag' : 'sensors' }}</span>
+                <span class="material-icons text-2xl md:text-3xl">{{ item.type === 'Inquiry' ? 'shopping_bag' : 'sensors' }}</span>
               </div>
-              <div>
-                <div class="flex items-center space-x-3 mb-2">
-                  <span class="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm"
+              <div class="flex-grow">
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                  <span class="text-[7px] md:text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap"
                     :class="item.type === 'Inquiry' ? 'bg-purple-100 text-purple-700' : 'bg-amber-100 text-amber-700'">
-                    {{ item.type === 'Inquiry' ? 'Order Inquiry' : 'Instant Lead' }}
+                    {{ item.type === 'Inquiry' ? 'Order Enquiry' : 'Instant Lead' }}
                   </span>
-                  <span class="text-[10px] text-slate-300 font-bold uppercase tracking-widest">{{ timeAgo(item.createdAt) }}</span>
+                  <span class="text-[7px] md:text-[9px] text-slate-300 font-bold uppercase tracking-widest whitespace-nowrap">{{ timeAgo(item.createdAt) }}</span>
                 </div>
-                <h3 class="text-2xl font-black text-slate-900 tracking-tight mb-1">{{ item.fullName || item.name }}</h3>
-                <div class="flex items-center space-x-4">
-                  <a :href="'tel:' + item.phone" class="text-sm font-bold text-slate-500 hover:text-primary-600 transition flex items-center gap-1">
-                    <span class="material-icons text-sm">call</span>
+                <h3 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight mb-1">{{ item.fullName || item.name }}</h3>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-1">
+                  <a :href="'tel:' + item.phone" class="text-xs font-bold text-slate-500 hover:text-primary-600 transition flex items-center gap-1">
+                    <span class="material-icons text-xs">call</span>
                     {{ item.phone }}
                   </a>
-                  <span v-if="item.city" class="text-[10px] text-slate-300 font-bold uppercase tracking-widest flex items-center gap-1">
-                    <span class="material-icons text-xs">location_on</span>
+                  <span v-if="item.city" class="text-[8px] md:text-[10px] text-slate-300 font-bold uppercase tracking-widest flex items-center gap-1">
+                    <span class="material-icons text-[10px]">location_on</span>
                     {{ item.city }}, {{ item.state }}
                   </span>
                 </div>
@@ -50,48 +50,45 @@
             </div>
 
             <!-- Detail Section -->
-            <div class="flex-1 max-w-md">
-              <div v-if="item.type === 'Inquiry'" class="bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100">
-                <div class="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-4 flex items-center justify-between">
+            <div class="flex-1 max-w-md w-full">
+              <div v-if="item.type === 'Inquiry'" class="bg-slate-50/50 p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border border-slate-100">
+                <div class="text-[8px] md:text-[10px] text-slate-400 font-black uppercase tracking-widest mb-3 flex items-center justify-between">
                   <span>Inquiry Selection</span>
                   <span class="text-primary-600">₹{{ item.totalAmount }}</span>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                  <span v-for="(p, i) in item.products" :key="i" class="text-[10px] font-black text-slate-700 bg-white px-3 py-1.5 rounded-xl border border-slate-100 shadow-sm">
+                  <span v-for="(p, i) in item.products" :key="i" class="text-[8px] md:text-[10px] font-black text-slate-700 bg-white px-2.5 py-1 rounded-lg border border-slate-100 shadow-sm">
                     {{ p.name }} <span class="text-slate-300 ml-1">×{{ p.quantity }}</span>
                   </span>
                 </div>
               </div>
-              <div v-else class="flex items-center space-x-4 p-6 bg-slate-50/50 rounded-[2rem] border border-slate-100">
-                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-400 shadow-sm">
-                  <span class="material-icons text-xl">contact_support</span>
+              <div v-else class="flex items-center space-x-3 p-4 md:p-6 bg-slate-50/50 rounded-[1.5rem] md:rounded-[2rem] border border-slate-100">
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-white rounded-lg flex items-center justify-center text-slate-400 shadow-sm">
+                  <span class="material-icons text-lg">contact_support</span>
                 </div>
                 <div>
-                  <p class="text-xs font-black text-slate-900 tracking-tight">Express Interest Captured</p>
-                  <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Awaiting Initial Contact</p>
+                  <p class="text-[10px] md:text-xs font-black text-slate-900 tracking-tight">Express Interest Captured</p>
+                  <p class="text-[8px] md:text-[10px] text-slate-400 font-bold uppercase tracking-widest">Awaiting Initial Contact</p>
                 </div>
               </div>
             </div>
 
             <!-- Actions -->
-            <div class="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-4">
-              <div v-if="item.sessionDuration" class="flex items-center space-x-2 bg-slate-900 text-white px-4 py-2 rounded-xl">
-                <span class="material-icons text-xs">timer</span>
-                <span class="text-[10px] font-black uppercase tracking-widest">{{ formatDuration(item.sessionDuration) }}</span>
+            <div class="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-4 w-full md:w-auto">
+              <div v-if="item.sessionDuration" class="flex items-center space-x-2 bg-slate-900 text-white px-3 py-1.5 rounded-lg">
+                <span class="material-icons text-[10px]">timer</span>
+                <span class="text-[8px] font-black uppercase tracking-widest">{{ formatDuration(item.sessionDuration) }}</span>
               </div>
               
-              <select v-if="item.type === 'Inquiry'"
-                @change="updateStatus(item._id, $event.target.value)" 
+              <select
+                @change="updateStatus(item, $event.target.value)" 
                 :class="statusClass(item.status)"
-                class="text-[10px] font-black uppercase tracking-[0.2em] px-6 py-3 rounded-2xl outline-none border-none cursor-pointer shadow-lg transition-all active:scale-95"
+                class="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl outline-none border-none cursor-pointer shadow-lg transition-all active:scale-95"
               >
                 <option value="pending" :selected="item.status === 'pending'">Pending</option>
                 <option value="contacted" :selected="item.status === 'contacted'">Contacted</option>
                 <option value="completed" :selected="item.status === 'completed'">Completed</option>
               </select>
-              <div v-else class="bg-slate-100 text-slate-400 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-sm">
-                New Prospect
-              </div>
             </div>
 
           </div>
@@ -127,13 +124,17 @@ const combinedList = computed(() => {
 
 const fetchData = async () => {
   try {
+    loading.value = true;
     const [inqData, leadData] = await Promise.all([
       inquiryService.getAll(),
       leadService.getAll()
     ]);
     inquiries.value = inqData;
     leads.value = leadData;
-  } catch (error) {}
+  } catch (error) {
+  } finally {
+    loading.value = false;
+  }
 };
 
 onMounted(fetchData);
@@ -141,12 +142,16 @@ onMounted(fetchData);
 const formatDuration = (sec) => {
   if (!sec) return '0m';
   const m = Math.floor(sec / 60);
-  return `${m} mins browsing`;
+  return `${m}m browsing`;
 };
 
-const updateStatus = async (id, status) => {
+const updateStatus = async (item, status) => {
   try {
-    await inquiryService.updateStatus(id, status);
+    if (item.type === 'Inquiry') {
+      await inquiryService.updateStatus(item._id, status);
+    } else {
+      await leadService.updateStatus(item._id, status);
+    }
     toast.success('Status synchronized successfully');
     await fetchData();
   } catch (error) {}
