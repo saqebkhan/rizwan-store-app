@@ -37,6 +37,10 @@ if ('serviceWorker' in navigator) {
                     registration.active.postMessage({ type: 'FLUSH_PENDING_NOTIFICATIONS' });
                 }
             });
+            // Register true background sync for when app is completely closed
+            if ('sync' in registration) {
+                registration.sync.register('flush-notifications').catch(console.error);
+            }
         }
     });
 }

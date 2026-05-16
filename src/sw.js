@@ -12,11 +12,35 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(clients.claim());
 });
 
+// ─── INDEXEDDB AUTH CHECK: Only show notifications if Admin is logged in ──────
+function checkIsAdmin() {
+    return new Promise((resolve) => {
+        const request = indexedDB.open('AdminStore', 1);
+        request.onupgradeneeded = (e) => e.target.result.createObjectStore('auth');
+        request.onsuccess = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('auth')) return resolve(false);
+            const tx = db.transaction('auth', 'readonly');
+            const getReq = tx.objectStore('auth').get('isAdmin');
+            getReq.onsuccess = () => resolve(!!getReq.result);
+            getReq.onerror = () => resolve(false);
+        };
+        request.onerror = () => resolve(false);
+    });
+}
+
 // ─── PUSH: Handle incoming background push notifications ───────────────────
-// This fires regardless of whether the app is open or closed.
-// The OS/browser wakes the SW, runs this handler, then goes back to sleep.
 self.addEventListener('push', function (event) {
     if (!event.data) return;
+
+    event.waitUntil(
+        (async () => {
+            // Fulfill user architecture: Check IndexedDB. Only admins get notifications.
+            const isAdmin = await checkIsAdmin();
+            if (!isAdmin) {
+                console.log('[SW] Push received but user is not admin. Ignoring.');
+                return;
+            }
     
     let data = {};
     try {
@@ -40,8 +64,8 @@ self.addEventListener('push', function (event) {
         }
     };
 
-    event.waitUntil(
-        self.registration.showNotification(data.title || 'Executive Alert', options)
+        await self.registration.showNotification(data.title || 'Executive Alert', options);
+        })()
     );
 });
 
@@ -56,7 +80,8 @@ self.addEventListener('pushsubscriptionchange', function (event) {
                 if (!subscription) return;
                 
                 // Re-register the new/current subscription with the backend
-                await fetch('/api/notifications/subscribe', {
+                const apiUrl = self.location.origin.includes('5173') ? 'http://localhost:5000' : self.location.origin;
+                await fetch(`${apiUrl}/api/notifications/subscribe`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(subscription)
@@ -74,17 +99,24 @@ self.addEventListener('message', function (event) {
     }
 });
 
-// ─── ONLINE: Flush pending notifications when network is restored ───────────
-// This catches the case where the device was offline while notifications
-// were sent — when internet comes back, we fetch and show all missed alerts.
+// ─── BACKGROUND SYNC: Flush pending when device restores internet (App closed)
+self.addEventListener('sync', function(event) {
+    if (event.tag === 'flush-notifications') {
+        event.waitUntil(flushPendingNotifications());
+    }
+});
+
 self.addEventListener('fetch', function (event) {
-    // Only intercept our special reconnect check
     return;
 });
 
 async function flushPendingNotifications() {
     try {
-        const response = await fetch('/api/notifications/pending');
+        const isAdmin = await checkIsAdmin();
+        if (!isAdmin) return;
+
+        const apiUrl = self.location.origin.includes('5173') ? 'http://localhost:5000' : self.location.origin;
+        const response = await fetch(`${apiUrl}/api/notifications/pending`);
         if (!response.ok) return;
         
         const { notifications } = await response.json();

@@ -1,5 +1,17 @@
 import { defineStore } from 'pinia';
 
+function setAdminInIDB(isAdmin) {
+    try {
+        const request = indexedDB.open('AdminStore', 1);
+        request.onupgradeneeded = (e) => e.target.result.createObjectStore('auth');
+        request.onsuccess = (e) => {
+            const db = e.target.result;
+            const tx = db.transaction('auth', 'readwrite');
+            tx.objectStore('auth').put(isAdmin, 'isAdmin');
+        };
+    } catch (err) {}
+}
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     isAdmin: localStorage.getItem('isAdmin') === 'true',
@@ -13,6 +25,7 @@ export const useAuthStore = defineStore('auth', {
         this.adminData = { name: 'Admin User', role: 'Owner' };
         localStorage.setItem('isAdmin', 'true');
         localStorage.setItem('adminData', JSON.stringify(this.adminData));
+        setAdminInIDB(true);
         return true;
       }
       return false;
@@ -22,6 +35,7 @@ export const useAuthStore = defineStore('auth', {
       this.adminData = null;
       localStorage.removeItem('isAdmin');
       localStorage.removeItem('adminData');
+      setAdminInIDB(false);
     }
   }
 });
