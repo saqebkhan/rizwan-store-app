@@ -2,96 +2,99 @@
   <div class="min-h-screen flex flex-col relative bg-white selection:bg-primary-100 selection:text-primary-900">
     <LoadingSpinner v-if="loading" overlay />
     
-    <!-- Premium Navigation -->
-    <nav class="sticky top-0 z-[100] bg-white/80 backdrop-blur-xl border-b border-slate-50 px-6 py-4">
-      <div class="max-w-7xl mx-auto flex items-center justify-between">
-        <router-link to="/" class="group flex items-center space-x-2">
-          <div class="w-10 h-10 bg-slate-900 rounded-2xl flex items-center justify-center transition-transform group-hover:rotate-12">
-            <span class="text-white font-black text-xl italic">R</span>
-          </div>
-          <span class="text-2xl font-black text-slate-900 tracking-tighter">Rizwan<span class="text-primary-600">Store</span></span>
-        </router-link>
-        
-        <!-- Desktop Search Bar -->
-        <div class="hidden lg:flex flex-1 max-w-xl mx-12 relative group">
-          <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-            <span class="material-icons text-slate-400 text-xl group-focus-within:text-primary-600 transition">search</span>
-          </div>
-          <input 
-            type="text" 
-            placeholder="Search our luxury collection..." 
-            class="w-full bg-slate-50 border border-slate-100 rounded-[1.25rem] pl-14 pr-6 py-3.5 focus:bg-white focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 outline-none transition-all font-medium text-slate-900"
-            v-model="searchQuery"
-            @input="handleSearch"
-            @blur="setTimeout(() => suggestions = [], 200)"
-          />
-          <!-- Suggestions dropdown -->
-          <Transition name="fade">
-            <div v-if="suggestions.length" class="absolute top-full left-0 right-0 bg-white mt-4 rounded-[2rem] shadow-[0_30px_100px_rgba(0,0,0,0.1)] border border-slate-100 overflow-hidden z-50 p-2">
-              <router-link 
-                v-for="item in suggestions" 
-                :key="item._id" 
-                :to="'/product/' + item.slug"
-                class="flex items-center space-x-4 p-3 hover:bg-slate-50 rounded-[1.25rem] transition group"
-              >
-                <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-100">
-                  <img :src="getImageUrl(item.thumbnail)" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
-                </div>
-                <div>
-                  <p class="text-sm font-black text-slate-900">{{ item.title }}</p>
-                  <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{{ item.category?.name }}</p>
-                </div>
-                <div class="ml-auto pr-2">
-                  <span class="text-slate-900 font-black text-xs">₹{{ item.finalPrice }}</span>
-                </div>
-              </router-link>
+    <!-- Global Sticky Header -->
+    <header class="sticky top-0 z-[100] w-full flex flex-col shadow-sm">
+      <!-- Premium Navigation (Top) -->
+      <nav class="bg-white/90 backdrop-blur-xl px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+          <router-link to="/" class="group flex items-center space-x-2">
+            <div class="w-10 h-10 bg-slate-900 rounded-2xl flex items-center justify-center transition-transform group-hover:rotate-12">
+              <span class="text-white font-black text-xl italic">R</span>
             </div>
-          </Transition>
-        </div>
-
-        <!-- Action Icons -->
-        <div class="flex items-center space-x-8">
-          <router-link to="/cart" class="group relative flex items-center space-x-2">
-            <div class="relative">
-              <span class="material-icons text-slate-400 group-hover:text-slate-900 transition">shopping_bag</span>
-              <span v-if="cartCount" class="absolute -top-2 -right-2 bg-primary-600 text-white text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center shadow-lg shadow-primary-600/20">{{ cartCount }}</span>
-            </div>
-            <span class="hidden md:block text-xs font-black uppercase tracking-widest text-slate-400 group-hover:text-slate-900 transition">Bag</span>
+            <span class="text-2xl font-black text-slate-900 tracking-tighter">Rizwan<span class="text-primary-600">Store</span></span>
           </router-link>
           
-          <router-link v-if="!isAdmin" to="/admin-login" class="bg-slate-50 text-slate-400 hover:text-slate-900 hover:bg-slate-100 p-2.5 rounded-xl transition">
-            <span class="material-icons text-xl">admin_panel_settings</span>
-          </router-link>
-          <router-link v-else to="/admin" class="bg-primary-50 text-primary-600 p-2.5 rounded-xl transition">
-            <span class="material-icons text-xl">dashboard</span>
-          </router-link>
-        </div>
-      </div>
-    </nav>
+          <!-- Desktop Search Bar -->
+          <div class="hidden lg:flex flex-1 max-w-xl mx-12 relative group">
+            <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+              <span class="material-icons text-slate-400 text-xl group-focus-within:text-primary-600 transition">search</span>
+            </div>
+            <input 
+              type="text" 
+              placeholder="Search our luxury collection..." 
+              class="w-full bg-slate-50 border border-slate-100 rounded-[1.25rem] pl-14 pr-6 py-3.5 focus:bg-white focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 outline-none transition-all font-medium text-slate-900"
+              v-model="searchQuery"
+              @input="handleSearch"
+              @blur="setTimeout(() => suggestions = [], 200)"
+            />
+            <!-- Suggestions dropdown -->
+            <Transition name="fade">
+              <div v-if="suggestions.length" class="absolute top-full left-0 right-0 bg-white mt-4 rounded-[2rem] shadow-[0_30px_100px_rgba(0,0,0,0.1)] border border-slate-100 overflow-hidden z-50 p-2">
+                <router-link 
+                  v-for="item in suggestions" 
+                  :key="item._id" 
+                  :to="'/product/' + item.slug"
+                  class="flex items-center space-x-4 p-3 hover:bg-slate-50 rounded-[1.25rem] transition group"
+                >
+                  <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-100">
+                    <img :src="getImageUrl(item.thumbnail)" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+                  </div>
+                  <div>
+                    <p class="text-sm font-black text-slate-900">{{ item.title }}</p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{{ item.category?.name }}</p>
+                  </div>
+                  <div class="ml-auto pr-2">
+                    <span class="text-slate-900 font-black text-xs">₹{{ item.finalPrice }}</span>
+                  </div>
+                </router-link>
+              </div>
+            </Transition>
+          </div>
 
-    <!-- Trust Ticker -->
-    <div class="bg-slate-950 py-3 overflow-hidden">
-      <div class="flex items-center justify-center whitespace-nowrap space-x-12 animate-scroll">
-        <div v-for="i in 2" :key="i" class="flex items-center space-x-12 shrink-0">
-          <div class="flex items-center space-x-3">
-            <span class="material-icons text-primary-500 text-sm">verified</span>
-            <span class="text-[9px] font-black uppercase tracking-[0.3em] text-white/60">All Product Cash On Delivery</span>
+          <!-- Action Icons -->
+          <div class="flex items-center space-x-8">
+            <router-link to="/cart" class="group relative flex items-center space-x-2">
+              <div class="relative">
+                <span class="material-icons text-slate-400 group-hover:text-slate-900 transition">shopping_bag</span>
+                <span v-if="cartCount" class="absolute -top-2 -right-2 bg-primary-600 text-white text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center shadow-lg shadow-primary-600/20">{{ cartCount }}</span>
+              </div>
+              <span class="hidden md:block text-xs font-black uppercase tracking-widest text-slate-400 group-hover:text-slate-900 transition">Bag</span>
+            </router-link>
+            
+            <router-link v-if="!isAdmin" to="/admin-login" class="bg-slate-50 text-slate-400 hover:text-slate-900 hover:bg-slate-100 p-2.5 rounded-xl transition">
+              <span class="material-icons text-xl">admin_panel_settings</span>
+            </router-link>
+            <router-link v-else to="/admin" class="bg-primary-50 text-primary-600 p-2.5 rounded-xl transition">
+              <span class="material-icons text-xl">dashboard</span>
+            </router-link>
           </div>
-          <div class="flex items-center space-x-3">
-            <span class="material-icons text-primary-500 text-sm">local_shipping</span>
-            <span class="text-[9px] font-black uppercase tracking-[0.3em] text-white/60">All Product Free Delivery</span>
-          </div>
-          <div class="flex items-center space-x-3">
-            <span class="material-icons text-primary-500 text-sm">payments</span>
-            <span class="text-[9px] font-black uppercase tracking-[0.3em] text-white/60">You Checkout We Deliver</span>
-          </div>
-          <div class="flex items-center space-x-3">
-            <span class="material-icons text-primary-500 text-sm">assignment_return</span>
-            <span class="text-[9px] font-black uppercase tracking-[0.3em] text-white/60">All Product 7-Day Returns</span>
+        </div>
+      </nav>
+
+      <!-- Trust Ticker (Below Navbar) -->
+      <div class="bg-slate-950 py-2.5 overflow-hidden">
+        <div class="flex items-center justify-center whitespace-nowrap space-x-12 animate-scroll">
+          <div v-for="i in 2" :key="i" class="flex items-center space-x-12 shrink-0">
+            <div class="flex items-center space-x-3">
+              <span class="material-icons text-primary-500 text-sm">verified</span>
+              <span class="text-[9px] font-black uppercase tracking-[0.3em] text-white/60">All Product Cash On Delivery</span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="material-icons text-primary-500 text-sm">local_shipping</span>
+              <span class="text-[9px] font-black uppercase tracking-[0.3em] text-white/60">All Product Free Delivery</span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="material-icons text-primary-500 text-sm">payments</span>
+              <span class="text-[9px] font-black uppercase tracking-[0.3em] text-white/60">You Checkout We Deliver</span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="material-icons text-primary-500 text-sm">assignment_return</span>
+              <span class="text-[9px] font-black uppercase tracking-[0.3em] text-white/60">All Product 7-Day Returns</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </header>
 
     <!-- Main Content -->
     <main class="flex-grow">

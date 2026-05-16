@@ -13,9 +13,9 @@ export const useTrackingStore = defineStore('tracking', {
   }),
   actions: {
     initTracking() {
-      // Senior Design: Do not track administrators to maintain clean ecosystem analytics
-      const adminData = localStorage.getItem('auth_admin');
-      if (adminData && JSON.parse(adminData)) return;
+      // Do not track administrators to maintain clean analytics
+      const isAdmin = localStorage.getItem('isAdmin') === 'true';
+      if (isAdmin) return;
 
       if (!this.visitorId) {
         this.visitorId = uuidv4();
@@ -24,6 +24,7 @@ export const useTrackingStore = defineStore('tracking', {
       this.startSession();
     },
     async startSession() {
+      if (localStorage.getItem('isAdmin') === 'true') return;
       try {
         const deviceInfo = {
           visitorId: this.visitorId,
@@ -45,6 +46,7 @@ export const useTrackingStore = defineStore('tracking', {
       }
     },
     async trackPage(path) {
+      if (localStorage.getItem('isAdmin') === 'true') return;
       try {
         await axios.post(`${API_BASE}/sessions/update`, {
           visitorId: this.visitorId,
