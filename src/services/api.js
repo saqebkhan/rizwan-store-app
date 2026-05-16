@@ -41,4 +41,5 @@ export const bannerService = {
 export const notificationService = {
   subscribe: (subscription) => api.post('/api/notifications/subscribe', subscription),
   unsubscribe: (endpoint) => api.post('/api/notifications/unsubscribe', { endpoint }, { silent: true }),
+  getPending: () => api.get('/api/notifications/pending', { silent: true }),
 };

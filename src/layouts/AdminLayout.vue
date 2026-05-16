@@ -107,7 +107,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/useAuth';
 import { notificationService } from '../services/api';
@@ -119,6 +119,7 @@ const toast = useToast();
 
 const isSubscribed = ref(false);
 const isSubscribing = ref(false);
+let onlineHandler = null;
 
 const navLinks = [
   { to: '/admin', icon: 'dashboard', label: 'Dash' },
@@ -149,11 +150,38 @@ const checkSubscription = async () => {
   if ('serviceWorker' in navigator && 'PushManager' in window) {
     const registration = await navigator.serviceWorker.ready;
     const subscription = await registration.pushManager.getSubscription();
-    if (subscription) isSubscribed.value = true;
+    if (subscription) {
+      isSubscribed.value = true;
+      // Re-confirm subscription with backend on every mount (heals stale endpoints)
+      try { await notificationService.subscribe(subscription); } catch(e) {}
+    }
   }
 };
 
-onMounted(checkSubscription);
+// Flush any notifications missed while offline (e.g., device was off/no internet)
+const flushPendingOnReconnect = async () => {
+  if (!isSubscribed.value) return;
+  try {
+    const data = await notificationService.getPending();
+    const pending = data?.notifications || [];
+    if (pending.length > 0) {
+      toast.success(`${pending.length} alert${pending.length > 1 ? 's' : ''} received while offline`);
+    }
+  } catch (e) {}
+};
+
+onMounted(async () => {
+  await checkSubscription();
+  // Flush any queued alerts from when the admin was offline
+  if (navigator.onLine) flushPendingOnReconnect();
+  // Listen for reconnection events
+  onlineHandler = () => flushPendingOnReconnect();
+  window.addEventListener('online', onlineHandler);
+});
+
+onUnmounted(() => {
+  if (onlineHandler) window.removeEventListener('online', onlineHandler);
+});
 
 const subscribeToNotifications = async () => {
   try {
@@ -168,9 +196,15 @@ const subscribeToNotifications = async () => {
     }
 
     const registration = await navigator.serviceWorker.ready;
-    const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
     
-    // VAPID key conversion
+    // Force unsubscribe any old/stale subscription first — this ensures the backend
+    // always gets a FRESH endpoint, preventing the "stale subscription" bug
+    const existingSub = await registration.pushManager.getSubscription();
+    if (existingSub) {
+      await existingSub.unsubscribe();
+    }
+
+    const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
     const padding = '='.repeat((4 - vapidPublicKey.length % 4) % 4);
     const base64 = (vapidPublicKey + padding).replace(/\-/g, '+').replace(/_/g, '/');
     const rawData = window.atob(base64);
@@ -184,9 +218,10 @@ const subscribeToNotifications = async () => {
 
     await notificationService.subscribe(subscription);
     isSubscribed.value = true;
-    toast.success('Live ecosystem alerts activated');
+    toast.success('Live alerts activated — notifications will arrive even when app is closed');
   } catch (error) {
-    toast.error('Authentication failure for alerts');
+    console.error('[Push subscribe error]', error);
+    toast.error('Failed to activate alerts — please try again');
   } finally {
     isSubscribing.value = false;
   }

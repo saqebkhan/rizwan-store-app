@@ -15,7 +15,7 @@ export default defineConfig({
       injectManifest: {
         rollupFormat: 'iife',
       },
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
         name: 'Rizwan E-Commerce',

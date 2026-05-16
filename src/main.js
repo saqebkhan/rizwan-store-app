@@ -18,17 +18,25 @@ trackingStore.initTracking()
 
 app.mount('#app')
 
-// Register Service Worker for PWA
+// Register Service Worker for PWA - do NOT auto-reload on update (kills push subscriptions)
 if ('serviceWorker' in navigator) {
-    registerSW({
+    const updateSW = registerSW({
         immediate: true,
         onNeedRefresh() {
-            // Display system update notice
-            console.log('Ecosystem update detected - refreshing SW');
-            window.location.reload();
+            // Silent update: apply the new SW without destroying active push subscriptions
+            // DO NOT call window.location.reload() here - it invalidates the push subscription
+            updateSW(true);
         },
         onOfflineReady() {
-            console.log('Ecosystem offline monitoring ready')
+            console.log('[SW] Offline monitoring ready');
+        },
+        onRegisteredSW(swUrl, registration) {
+            // When internet comes back online, tell the SW to flush any queued notifications
+            window.addEventListener('online', () => {
+                if (registration && registration.active) {
+                    registration.active.postMessage({ type: 'FLUSH_PENDING_NOTIFICATIONS' });
+                }
+            });
         }
-    })
+    });
 }
