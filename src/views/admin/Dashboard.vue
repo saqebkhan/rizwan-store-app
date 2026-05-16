@@ -49,56 +49,70 @@
 
       <!-- Main Intelligence Hub -->
       <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
-        <!-- Scrollable Advanced Performance Visualizer -->
-        <div class="xl:col-span-3 bg-white p-8 md:p-10 rounded-[3rem] shadow-sm border border-slate-100 flex flex-col">
-          <div class="flex items-center justify-between mb-10">
-            <div>
-              <h3 class="text-2xl font-black text-slate-900 tracking-tight">Ecosystem Intelligence</h3>
-              <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">Real-time interaction trajectory</p>
+        <!-- Advanced Performance Visualizer -->
+        <div class="xl:col-span-3 bg-white p-8 md:p-12 rounded-[3rem] shadow-sm border border-slate-100 flex flex-col">
+          <div class="mb-12">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+              <div>
+                <h3 class="text-2xl font-black text-slate-900 tracking-tight">Ecosystem Intelligence</h3>
+                <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">Real-time interaction trajectory</p>
+              </div>
+              
+              <div class="flex items-center gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
+                <button @click="period = 'weekly'" 
+                  :class="period === 'weekly' ? 'bg-white text-primary-600 shadow-sm border-slate-200' : 'text-slate-400 border-transparent'" 
+                  class="px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border">
+                  Weekly Snapshot
+                </button>
+                <button @click="period = 'monthly'" 
+                  :class="period === 'monthly' ? 'bg-white text-primary-600 shadow-sm border-slate-200' : 'text-slate-400 border-transparent'" 
+                  class="px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border">
+                  Monthly Analysis
+                </button>
+              </div>
             </div>
-            <div class="flex border-b-2 border-slate-50">
-              <button @click="period = 'weekly'" :class="period === 'weekly' ? 'border-primary-500 text-primary-600' : 'border-transparent text-slate-400'" class="px-6 py-3 border-b-2 -mb-[2px] text-[10px] font-black uppercase tracking-widest transition-all">Weekly</button>
-              <button @click="period = 'monthly'" :class="period === 'monthly' ? 'border-primary-500 text-primary-600' : 'border-transparent text-slate-400'" class="px-6 py-3 border-b-2 -mb-[2px] text-[10px] font-black uppercase tracking-widest transition-all">Monthly</button>
-            </div>
+            <div class="w-full h-px bg-slate-50"></div>
           </div>
 
-          <!-- Horizontal Scrollable Performance Charts -->
-          <div class="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x">
+          <!-- Enhanced Visual Charts -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             <div v-for="(val, label) in stats.performance[period]" :key="label" 
-              class="min-w-[280px] flex-shrink-0 bg-slate-50/50 p-8 rounded-[2.5rem] border border-slate-100/50 group snap-center relative overflow-hidden">
-              <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary-500/5 rounded-full blur-2xl"></div>
+              class="bg-slate-50/50 p-8 rounded-[2.5rem] border border-slate-100/50 group relative overflow-hidden transition-all hover:bg-white hover:shadow-xl">
               
-              <div class="flex items-center justify-between mb-8 relative z-10">
-                <span class="text-[10px] text-slate-400 font-black uppercase tracking-widest tracking-[0.2em]">{{ label }} Matrix</span>
-                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                  <span class="material-icons text-primary-500 text-sm">analytics</span>
+              <div class="flex items-center justify-between mb-8">
+                <div>
+                  <span class="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1 block">{{ label }} Matrix</span>
+                  <h4 class="text-4xl font-black text-slate-900 tracking-tighter">
+                    {{ label === 'growth' ? val + '%' : val }}
+                  </h4>
+                </div>
+                <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm text-primary-600">
+                  <span class="material-icons">{{ getPerformanceIcon(label) }}</span>
                 </div>
               </div>
               
-              <div class="relative z-10 flex items-end justify-between gap-4 mb-8">
-                <h4 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">
-                  {{ label === 'growth' ? val + '%' : val }}
-                </h4>
-                <div v-if="label !== 'growth'" class="text-[10px] font-black text-green-500 uppercase tracking-widest mb-2 flex items-center">
-                  <span class="material-icons text-xs mr-1">trending_up</span> Optimized
+              <!-- Growth Progress UI -->
+              <div class="space-y-3">
+                <div class="flex justify-between text-[9px] font-black uppercase tracking-widest">
+                  <span class="text-slate-400">Ecosystem Efficiency</span>
+                  <span class="text-primary-600">{{ label === 'growth' ? val + '%' : 'Optimized' }}</span>
+                </div>
+                <div class="h-3 w-full bg-slate-100 rounded-full overflow-hidden p-0.5">
+                  <div class="h-full bg-slate-950 rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(0,0,0,0.1)]" 
+                    :style="{ width: label === 'growth' ? (Math.max(0, Math.min(100, val))) + '%' : '100%' }"></div>
                 </div>
               </div>
-              
-              <!-- Enhanced Micro-Graph -->
-              <div class="space-y-3 relative z-10">
-                <div class="flex justify-between text-[8px] font-black text-slate-300 uppercase tracking-widest">
-                  <span>Efficiency</span>
-                  <span>{{ label === 'growth' ? val + '%' : '100%' }}</span>
-                </div>
-                <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                  <div class="h-full bg-slate-900 transition-all duration-1000 ease-out" :style="{ width: label === 'growth' ? val + '%' : '85%' }"></div>
-                </div>
+
+              <!-- Action Indicator -->
+              <div class="mt-6 flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Active Verification Data</span>
               </div>
             </div>
           </div>
 
           <!-- Bottom Utility Row -->
-          <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-slate-50">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-10 border-t border-slate-50">
             <div class="flex items-center gap-4">
               <div class="w-12 h-12 bg-primary-50 rounded-2xl flex items-center justify-center text-primary-600">
                 <span class="material-icons text-xl">speed</span>
@@ -235,6 +249,16 @@ const getIcon = (key) => {
   return icons[key] || 'insert_chart';
 };
 
+const getPerformanceIcon = (label) => {
+  const icons = {
+    visitors: 'group',
+    leads: 'sensors',
+    orders: 'shopping_bag',
+    growth: 'trending_up'
+  };
+  return icons[label] || 'analytics';
+};
+
 const isClickable = (key) => ['pendingLeads', 'pendingInquiries', 'totalLeads', 'totalInquiries'].includes(key);
 
 const handleStatClick = (key) => {
@@ -243,13 +267,3 @@ const handleStatClick = (key) => {
   }
 };
 </script>
-
-<style scoped>
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-</style>

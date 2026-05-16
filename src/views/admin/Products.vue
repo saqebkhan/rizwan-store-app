@@ -3,15 +3,27 @@
     <LoadingSpinner v-if="loading" />
     <div v-else class="space-y-12">
       <!-- Header -->
-      <header class="flex flex-col md:flex-row justify-between md:items-end gap-6">
-        <div>
-          <span class="text-primary-600 font-bold uppercase tracking-[0.3em] text-[10px] mb-3 block">Inventory Control</span>
-          <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Luxury Collections</h1>
+      <header class="flex flex-col md:flex-row justify-between md:items-end gap-6 mb-12">
+        <div class="space-y-1">
+          <span class="text-primary-600 font-bold uppercase tracking-[0.3em] text-[10px] block">Inventory Control</span>
+          <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">Luxury Collections</h1>
         </div>
-        <button @click="openModal()" class="bg-slate-950 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center space-x-3 hover:bg-primary-600 transition-all shadow-[0_20px_50px_rgba(0,0,0,0.15)] transform active:scale-95">
-          <span class="material-icons text-lg">add</span>
-          <span>Launch New Selection</span>
-        </button>
+        
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+          <!-- Category Filter -->
+          <div class="relative w-full sm:w-64">
+            <select v-model="categoryFilter" class="w-full pl-6 pr-12 py-4 bg-white border border-slate-100 rounded-2xl outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 font-bold text-[10px] uppercase tracking-widest text-slate-900 appearance-none shadow-sm transition-all">
+              <option value="">All Collections</option>
+              <option v-for="cat in categories" :key="cat._id" :value="cat._id">{{ cat.name }}</option>
+            </select>
+            <span class="material-icons absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none">filter_list</span>
+          </div>
+
+          <button @click="openModal()" class="w-full sm:w-auto bg-slate-950 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center space-x-3 hover:bg-primary-600 transition-all shadow-xl transform active:scale-95">
+            <span class="material-icons text-lg">add</span>
+            <span>Launch Selection</span>
+          </button>
+        </div>
       </header>
 
       <!-- Products Grid -->
@@ -30,7 +42,7 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-50">
-                <tr v-for="product in products" :key="product._id" class="group hover:bg-slate-50/50 transition-all duration-300">
+        <tr v-for="product in filteredProducts" :key="product._id" class="group hover:bg-slate-50/50 transition-all duration-300">
                   <td class="p-8 min-w-[320px]">
                     <div class="flex items-center space-x-6">
                       <div class="w-20 h-20 rounded-[1.5rem] overflow-hidden shadow-sm border border-white group-hover:scale-105 transition-transform duration-500">
@@ -77,7 +89,7 @@
 
         <!-- Mobile Card View -->
         <div class="md:hidden space-y-6">
-          <div v-for="product in products" :key="product._id" class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-50 space-y-6">
+          <div v-for="product in filteredProducts" :key="product._id" class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-50 space-y-6">
             <div class="flex items-center space-x-5">
               <div class="w-20 h-20 rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex-shrink-0">
                 <img :src="getImageUrl(product.thumbnail)" class="w-full h-full object-cover" />
@@ -204,7 +216,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { productService, categoryService } from '../../services/api';
 import { useApi } from '../../composables/useApi';
 import { useToast } from '../../composables/useToast';
@@ -227,6 +239,21 @@ const form = ref({
     stockQuantity: 0,
     category: '',
     description: '',
+});
+
+const categoryFilter = ref('');
+
+const filteredProducts = computed(() => {
+    let list = [...products.value];
+    if (categoryFilter.value) {
+        list = list.filter(p => (p.category?._id || p.category) === categoryFilter.value);
+    }
+    return list.sort((a, b) => {
+        const catA = a.category?.name || '';
+        const catB = b.category?.name || '';
+        if (catA !== catB) return catA.localeCompare(catB);
+        return a.title.localeCompare(b.title);
+    });
 });
 
 const thumbnailFile = ref(null);
@@ -252,7 +279,13 @@ const handleGallery = (e, index) => {
 
 const fetchProducts = async () => {
     const data = await productService.getAll();
-    products.value = data;
+    // Intelligent sorting by category and title
+    products.value = data.sort((a, b) => {
+      const catA = a.category?.name || '';
+      const catB = b.category?.name || '';
+      if (catA !== catB) return catA.localeCompare(catB);
+      return a.title.localeCompare(b.title);
+    });
 };
 
 const fetchCategories = async () => {
