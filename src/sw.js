@@ -26,10 +26,10 @@ self.addEventListener('push', function (event) {
         body: data.body || 'New ecosystem activity detected.',
         icon: '/pwa-192x192.png',
         badge: '/pwa-192x192.png',
-        vibrate: [200, 100, 200, 100, 400],
-        tag: 'admin-notification', // Consistent tag for high-priority alerts
-        renotify: true, // Always vibrate/sound even if same tag
-        requireInteraction: true, // Stay until user acts
+        vibrate: [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110],
+        tag: `admin-alert-${Date.now()}`, // Dynamic tag forces fresh vibration/sound every time
+        renotify: true, // Bypass OS "already notified" suppression
+        requireInteraction: true, // Keep notification visible until action
         data: {
             dateOfArrival: Date.now(),
             url: data.url || '/admin/leads'
