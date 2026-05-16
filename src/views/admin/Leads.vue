@@ -17,8 +17,9 @@
 
       <!-- Combined List -->
       <div class="grid grid-cols-1 gap-6">
-        <div v-for="item in combinedList" :key="item._id" 
-          class="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-50 overflow-hidden hover:shadow-[0_30px_100px_rgba(0,0,0,0.05)] transition-all duration-500 group">
+        <div v-for="item in combinedList" :key="item._id" :id="'item-' + item._id"
+          class="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-50 overflow-hidden hover:shadow-[0_30px_100px_rgba(0,0,0,0.05)] transition-all duration-500 group relative"
+          :class="{ 'ring-4 ring-primary-500 ring-offset-4 animate-pulse-soft': highlightedId === item._id }">
           <div class="p-6 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
             
             <!-- Type & Customer Info -->
@@ -104,15 +105,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
+import { useRoute } from 'vue-router';
 import { inquiryService, leadService } from '../../services/api';
 import { useToast } from '../../composables/useToast';
 import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 
+const route = useRoute();
 const toast = useToast();
 const inquiries = ref([]);
 const leads = ref([]);
 const loading = ref(false);
+const highlightedId = ref(null);
 
 const combinedList = computed(() => {
   const merged = [
@@ -137,7 +141,40 @@ const fetchData = async () => {
   }
 };
 
-onMounted(fetchData);
+onMounted(async () => {
+  await fetchData();
+  
+  // Handle Deep Linking & Highlighting
+  const targetId = route.query.id;
+  const targetStatus = route.query.status;
+  const targetType = route.query.type;
+
+  if (targetStatus === 'pending') {
+    // Find first pending item of that type
+    const target = combinedList.value.find(i => 
+      i.status === 'pending' && 
+      (targetType ? i.type.toLowerCase() === targetType : true)
+    );
+    
+    if (target) {
+      highlightItem(target._id);
+    }
+  } else if (targetId) {
+    highlightItem(targetId);
+  }
+});
+
+const highlightItem = async (id) => {
+  highlightedId.value = id;
+  await nextTick();
+  const el = document.getElementById('item-' + id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => {
+      highlightedId.value = null;
+    }, 3000);
+  }
+};
 
 const formatDuration = (sec) => {
   if (!sec) return '0m';
@@ -146,15 +183,21 @@ const formatDuration = (sec) => {
 };
 
 const updateStatus = async (item, status) => {
+  // Optimistic UI Update (Caching Technique)
+  const originalStatus = item.status;
+  item.status = status; // Update instantly in UI
+
   try {
     if (item.type === 'Inquiry') {
       await inquiryService.updateStatus(item._id, status);
     } else {
       await leadService.updateStatus(item._id, status);
     }
-    toast.success('Status synchronized successfully');
-    await fetchData();
-  } catch (error) {}
+    toast.success(`${item.type} synchronized`);
+  } catch (error) {
+    item.status = originalStatus; // Revert on failure
+    toast.error('Sync failed - Reverting state');
+  }
 };
 
 const statusClass = (status) => {
@@ -178,3 +221,13 @@ const timeAgo = (date) => {
   return "just now";
 };
 </script>
+
+<style scoped>
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.01); }
+}
+.animate-pulse-soft {
+  animation: pulse-soft 1s ease-in-out infinite;
+}
+</style>

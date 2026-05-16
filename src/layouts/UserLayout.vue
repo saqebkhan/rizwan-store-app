@@ -256,19 +256,21 @@ const leadForm = ref({ name: '', phone: '' });
 let popupInterval = null;
 
 onMounted(() => {
-  // Show immediately for every visitor on landing
-  if (!authStore.isAdmin) {
+  // Show immediately for every visitor on landing if not already submitted in session
+  const hasSubmitted = sessionStorage.getItem('leadSubmitted');
+  
+  if (!authStore.isAdmin && !hasSubmitted) {
     setTimeout(() => {
       showPopup.value = true;
-    }, 1000);
+    }, 1500);
   }
   
-  // Repeatedly show every 3 mins for visitors
+  // Repeatedly show every 2 mins for visitors who haven't submitted
   popupInterval = setInterval(() => {
-    if (!showPopup.value && !authStore.isAdmin) {
+    if (!showPopup.value && !authStore.isAdmin && !sessionStorage.getItem('leadSubmitted')) {
       showPopup.value = true;
     }
-  }, 180000);
+  }, 120000);
 });
 
 onUnmounted(() => {
@@ -289,6 +291,7 @@ const submitLead = async () => {
     await leadService.create(leadForm.value);
     localStorage.setItem('userName', leadForm.value.name);
     localStorage.setItem('userPhone', leadForm.value.phone);
+    sessionStorage.setItem('leadSubmitted', 'true');
     showPopup.value = false;
     toast.success('Welcome to the Inner Circle!');
   } catch (err) {

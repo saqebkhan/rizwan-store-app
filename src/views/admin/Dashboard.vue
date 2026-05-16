@@ -155,7 +155,7 @@
               </div>
 
               <div class="space-y-4">
-                <div @click="router.push('/admin/leads')" class="bg-white/5 border border-white/10 p-5 rounded-[1.5rem] hover:bg-white/10 transition cursor-pointer group flex items-center justify-between">
+                <div @click="router.push('/admin/leads?type=lead&status=pending')" class="bg-white/5 border border-white/10 p-5 rounded-[1.5rem] hover:bg-white/10 transition cursor-pointer group flex items-center justify-between">
                   <div>
                     <p class="text-[8px] font-black uppercase tracking-widest text-primary-400 mb-1">Pending Leads</p>
                     <p class="text-xl font-black">{{ stats.cards.pendingLeads }}</p>
@@ -163,7 +163,7 @@
                   <span class="material-icons text-primary-400 group-hover:translate-x-1 transition">chevron_right</span>
                 </div>
 
-                <div @click="router.push('/admin/leads')" class="bg-white/5 border border-white/10 p-5 rounded-[1.5rem] hover:bg-white/10 transition cursor-pointer group flex items-center justify-between">
+                <div @click="router.push('/admin/leads?type=inquiry&status=pending')" class="bg-white/5 border border-white/10 p-5 rounded-[1.5rem] hover:bg-white/10 transition cursor-pointer group flex items-center justify-between">
                   <div>
                     <p class="text-[8px] font-black uppercase tracking-widest text-amber-400 mb-1">Enquiries</p>
                     <p class="text-xl font-black">{{ stats.cards.pendingInquiries }}</p>
@@ -178,17 +178,6 @@
             </div>
           </div>
 
-          <div class="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm">
-            <span class="text-primary-600 font-bold uppercase tracking-widest text-[8px] mb-2 block">Network Status</span>
-            <div class="flex items-center gap-3">
-              <div class="flex -space-x-2">
-                <div v-for="i in 3" :key="i" class="w-8 h-8 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center overflow-hidden">
-                  <img :src="'https://i.pravatar.cc/100?img=' + i" class="w-full h-full object-cover" />
-                </div>
-              </div>
-              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">3 Admins Active</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -263,7 +252,9 @@ const isClickable = (key) => ['pendingLeads', 'pendingInquiries', 'totalLeads', 
 
 const handleStatClick = (key) => {
   if (isClickable(key)) {
-    router.push('/admin/leads');
+    const type = key.toLowerCase().includes('lead') ? 'lead' : 'inquiry';
+    const status = key.toLowerCase().includes('pending') ? 'pending' : '';
+    router.push(`/admin/leads?type=${type}&status=${status}`);
   }
 };
 </script>
