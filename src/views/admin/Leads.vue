@@ -1,6 +1,19 @@
 <template>
   <div class="space-y-12 pb-32">
-    <LoadingSpinner v-if="loading" />
+    <!-- Skeleton Loading State -->
+    <div v-if="loading && combinedList.length === 0" class="space-y-12">
+      <div class="flex justify-between items-end gap-6">
+        <div class="space-y-4 w-64">
+          <div class="h-3 w-24 bg-slate-100 rounded-full animate-pulse"></div>
+          <div class="h-10 w-full bg-slate-100 rounded-2xl animate-pulse"></div>
+        </div>
+        <div class="h-14 w-48 bg-slate-100 rounded-2xl animate-pulse"></div>
+      </div>
+      <div class="space-y-6">
+        <div v-for="i in 3" :key="i" class="h-48 w-full bg-slate-50 rounded-[2.5rem] animate-pulse"></div>
+      </div>
+    </div>
+
     <div v-else class="space-y-12">
       <!-- Header -->
       <header class="flex flex-col md:flex-row justify-between md:items-end gap-6">
@@ -95,7 +108,7 @@
           </div>
         </div>
         
-        <div v-if="combinedList.length === 0" class="flex flex-col items-center justify-center py-40 bg-slate-50 rounded-[3rem] border border-dashed border-slate-200">
+        <div v-if="combinedList.length === 0 && !loading" class="flex flex-col items-center justify-center py-40 bg-slate-50 rounded-[3rem] border border-dashed border-slate-200">
           <span class="material-icons text-7xl text-slate-200 mb-6">dynamic_feed</span>
           <p class="text-slate-400 font-black uppercase tracking-widest text-sm">No activity recorded yet</p>
         </div>
@@ -183,9 +196,9 @@ const formatDuration = (sec) => {
 };
 
 const updateStatus = async (item, status) => {
-  // Optimistic UI Update (Caching Technique)
+  // Senior Architecture: Optimistic Local State Update (Instant Feedback)
   const originalStatus = item.status;
-  item.status = status; // Update instantly in UI
+  item.status = status; 
 
   try {
     if (item.type === 'Inquiry') {
@@ -193,10 +206,11 @@ const updateStatus = async (item, status) => {
     } else {
       await leadService.updateStatus(item._id, status);
     }
-    toast.success(`${item.type} synchronized`);
+    toast.success(`${item.type} state synchronized`);
   } catch (error) {
-    item.status = originalStatus; // Revert on failure
-    toast.error('Sync failed - Reverting state');
+    // Revert state only if server communication fails
+    item.status = originalStatus; 
+    toast.error('Synchronization failed - State reverted');
   }
 };
 
