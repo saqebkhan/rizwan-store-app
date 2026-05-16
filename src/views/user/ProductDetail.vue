@@ -3,7 +3,7 @@
     <LoadingSpinner v-if="loading" />
     <div v-else-if="product" class="max-w-7xl mx-auto px-6 py-12 md:py-20">
       <!-- Breadcrumbs -->
-      <nav class="flex text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8 md:mb-12 space-x-2 overflow-x-auto whitespace-nowrap">
+      <nav class="flex text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6 md:mb-12 space-x-2 overflow-x-auto whitespace-nowrap">
         <router-link to="/" class="hover:text-primary-600">Home</router-link>
         <span>/</span>
         <router-link to="/products" class="hover:text-primary-600">Products</router-link>
@@ -37,7 +37,7 @@
         <div class="flex flex-col">
           <div class="mb-8">
             <p class="text-xs text-primary-600 font-bold uppercase tracking-[0.3em] mb-4">{{ product.category?.name || 'Exclusive' }}</p>
-            <h1 class="text-4xl md:text-6xl font-black text-slate-900 leading-none tracking-tighter mb-6">{{ product.title }}</h1>
+            <h1 class="text-3xl md:text-6xl font-black text-slate-900 leading-none tracking-tighter mb-6">{{ product.title }}</h1>
             
             <div class="flex items-center space-x-6">
               <span class="text-4xl font-black text-slate-900 tracking-tighter">₹{{ product.finalPrice }}</span>
@@ -45,7 +45,7 @@
             </div>
           </div>
 
-          <p class="text-slate-500 leading-relaxed mb-10 text-lg lg:text-xl font-medium">{{ product.description }}</p>
+          <p class="text-slate-500 leading-relaxed mb-10 text-base md:text-xl font-medium">{{ product.description }}</p>
 
           <div class="space-y-6 mb-12">
             <div class="flex items-center space-x-4 h-16">

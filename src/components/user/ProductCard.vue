@@ -30,7 +30,7 @@
       <div class="mb-4">
         <p class="text-[10px] text-primary-600 font-bold uppercase tracking-[0.2em] mb-1">{{ product.category?.name || 'Collection' }}</p>
         <router-link :to="'/product/' + product.slug">
-          <h3 class="font-black text-slate-900 leading-tight line-clamp-2 hover:text-primary-600 transition tracking-tight">{{ product.title }}</h3>
+          <h3 class="font-black text-slate-900 leading-tight line-clamp-2 hover:text-primary-600 transition tracking-tight text-sm md:text-base">{{ product.title }}</h3>
         </router-link>
       </div>
       

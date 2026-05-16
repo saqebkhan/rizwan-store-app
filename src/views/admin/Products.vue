@@ -16,7 +16,8 @@
 
       <!-- Products Grid -->
       <div class="grid grid-cols-1 gap-6">
-        <div class="bg-white rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-50 overflow-hidden">
+        <!-- Desktop Table View -->
+        <div class="hidden md:block bg-white rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-50 overflow-hidden">
           <div class="overflow-x-auto scrollbar-hide">
             <table class="w-full text-left whitespace-nowrap">
               <thead class="bg-slate-950 text-white">
@@ -36,8 +37,8 @@
                         <img :src="getImageUrl(product.thumbnail)" loading="lazy" class="w-full h-full object-cover" />
                       </div>
                       <div>
-                        <p class="font-black text-slate-900 tracking-tight mb-1">{{ product.title }}</p>
-                        <p class="text-[9px] text-slate-300 font-bold uppercase tracking-widest">SKU: {{ product.sku }}</p>
+                        <p class="font-black text-slate-900 tracking-tight mb-1 text-sm md:text-base leading-snug">{{ product.title }}</p>
+                        <p class="text-[8px] md:text-[9px] text-slate-300 font-bold uppercase tracking-widest">SKU: {{ product.sku }}</p>
                       </div>
                     </div>
                   </td>
@@ -59,7 +60,7 @@
                     </div>
                   </td>
                   <td class="p-8 text-right">
-                    <div class="flex items-center justify-end space-x-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">
+                    <div class="flex items-center justify-end space-x-4 md:opacity-0 group-hover:opacity-100 transition-all duration-300 transform md:translate-x-4 group-hover:translate-x-0">
                       <button @click="openModal(product)" class="w-12 h-12 bg-white text-slate-900 rounded-2xl flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all shadow-sm border border-slate-100">
                         <span class="material-icons text-xl">edit</span>
                       </button>
@@ -71,6 +72,44 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="md:hidden space-y-6">
+          <div v-for="product in products" :key="product._id" class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-50 space-y-6">
+            <div class="flex items-center space-x-5">
+              <div class="w-20 h-20 rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex-shrink-0">
+                <img :src="getImageUrl(product.thumbnail)" class="w-full h-full object-cover" />
+              </div>
+              <div class="flex-grow">
+                <p class="font-black text-slate-900 tracking-tight mb-1">{{ product.title }}</p>
+                <span class="px-3 py-1 bg-slate-50 text-slate-400 rounded-full text-[8px] font-black uppercase tracking-widest border border-slate-100">{{ product.category?.name }}</span>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
+              <div>
+                <p class="text-[8px] text-slate-300 font-black uppercase tracking-widest mb-1">Valuation</p>
+                <p class="font-black text-slate-900">₹{{ product.finalPrice }}</p>
+              </div>
+              <div>
+                <p class="text-[8px] text-slate-300 font-black uppercase tracking-widest mb-1">Inventory</p>
+                <div class="flex items-center space-x-2">
+                  <div class="w-1.5 h-1.5 rounded-full" :class="product.stockQuantity > 5 ? 'bg-green-500' : 'bg-primary-500'"></div>
+                  <span class="font-black text-xs">{{ product.stockQuantity }} Units</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex gap-3 pt-2">
+              <button @click="openModal(product)" class="flex-1 bg-slate-50 text-slate-900 py-4 rounded-xl font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2">
+                <span class="material-icons text-sm">edit</span> Edit
+              </button>
+              <button @click="deleteProduct(product._id)" class="flex-1 bg-primary-50 text-primary-600 py-4 rounded-xl font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2">
+                <span class="material-icons text-sm">delete</span> Remove
+              </button>
+            </div>
           </div>
         </div>
       </div>

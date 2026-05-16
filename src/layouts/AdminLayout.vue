@@ -69,14 +69,14 @@
           <span class="text-xl font-black tracking-tighter text-slate-900">Admin<span class="text-primary-600">Hub</span></span>
         </div>
         <div class="flex space-x-4">
-          <button @click="logout" class="text-slate-400 hover:text-red-500 transition">
-            <span class="material-icons text-2xl">power_settings_new</span>
+          <button @click="logout" class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:text-red-500 transition">
+            <span class="material-icons text-xl">power_settings_new</span>
           </button>
         </div>
       </header>
 
       <!-- Content Area -->
-      <main class="flex-1 overflow-auto p-8 md:p-12 scrollbar-hide">
+      <main class="flex-1 overflow-auto p-6 md:p-12 scrollbar-hide">
         <router-view v-slot="{ Component }">
           <transition name="page" mode="out-in">
             <component :is="Component" />

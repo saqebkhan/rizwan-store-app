@@ -8,14 +8,14 @@
           <span class="text-primary-600 font-bold uppercase tracking-[0.3em] text-[10px] mb-3 block">Management Hub</span>
           <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Executive Dashboard</h1>
         </div>
-        <div class="flex items-center space-x-3 bg-slate-950 px-6 py-3 rounded-2xl shadow-xl">
-          <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span>
-          <span class="text-[10px] font-black uppercase tracking-widest text-white/70">Live Ecosystem Monitoring</span>
+        <div class="bg-slate-950 px-5 py-2.5 rounded-xl shadow-lg border border-white/5">
+          <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-3 inline-block"></span>
+          <span class="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-white/70">Live Ecosystem Monitoring</span>
         </div>
       </header>
 
       <!-- Stats Grid -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
         <div v-for="(stat, key) in stats.cards" :key="key" 
           class="bg-white p-8 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-50 group hover:border-primary-500 hover:shadow-[0_30px_100px_rgba(0,0,0,0.05)] transition-all duration-500 relative overflow-hidden">
           <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary-50/50 rounded-full scale-0 group-hover:scale-100 transition-transform duration-700"></div>
@@ -31,8 +31,8 @@
           </div>
           
           <div class="relative z-10">
-            <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mb-2">{{ formatKey(key) }}</p>
-            <h3 class="text-4xl font-black text-slate-900 tracking-tighter">{{ stat }}</h3>
+            <p class="text-[8px] md:text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1">{{ formatKey(key) }}</p>
+            <h3 class="text-2xl md:text-4xl font-black text-slate-900 tracking-tighter">{{ stat }}</h3>
           </div>
         </div>
       </div>

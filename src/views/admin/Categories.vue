@@ -3,10 +3,10 @@
     <LoadingSpinner v-if="loading" />
     <div v-else class="space-y-12">
       <!-- Header -->
-      <header class="flex flex-col md:flex-row justify-between md:items-end gap-8">
-        <div>
-          <span class="text-primary-600 font-bold uppercase tracking-[0.3em] text-[10px] mb-3 block">Taxonomy Management</span>
-          <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Product Categories</h1>
+      <header class="flex flex-col md:flex-row justify-between md:items-end gap-8 mb-12">
+        <div class="space-y-1">
+          <span class="text-primary-600 font-bold uppercase tracking-[0.3em] text-[10px] block">Taxonomy Management</span>
+          <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">Product Categories</h1>
         </div>
         
         <!-- Premium Creation Form -->
@@ -15,18 +15,20 @@
             <input v-model="newCatName" placeholder="Category Name" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 font-bold text-slate-900 transition-all" />
           </div>
           
-          <div class="relative group h-14 w-full sm:w-14 shrink-0 overflow-hidden rounded-2xl border-2 border-dashed border-slate-200 flex items-center justify-center bg-slate-50 hover:bg-white hover:border-primary-500/50 transition-all">
-            <input type="file" @change="handleCatImage" class="absolute inset-0 opacity-0 cursor-pointer z-10" />
-            <div v-if="!catImagePreview" class="flex items-center justify-center">
-              <span class="material-icons text-slate-300">add_a_photo</span>
+          <div class="flex items-center gap-4 w-full sm:w-auto">
+            <div class="relative group h-14 w-14 shrink-0 overflow-hidden rounded-2xl border-2 border-dashed border-slate-200 flex items-center justify-center bg-slate-50 hover:bg-white hover:border-primary-500/50 transition-all">
+              <input type="file" @change="handleCatImage" class="absolute inset-0 opacity-0 cursor-pointer z-10" />
+              <div v-if="!catImagePreview" class="flex items-center justify-center">
+                <span class="material-icons text-slate-300">add_a_photo</span>
+              </div>
+              <img v-else :src="catImagePreview" class="absolute inset-0 w-full h-full object-cover" />
             </div>
-            <img v-else :src="catImagePreview" class="absolute inset-0 w-full h-full object-cover" />
-          </div>
 
-          <button @click="createCategory" :disabled="isSaving" class="bg-slate-950 text-white h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center space-x-2 shadow-xl hover:bg-primary-600 transition-all shrink-0 w-full sm:w-auto disabled:opacity-50">
-            <span class="material-icons text-sm">{{ isSaving ? 'sync' : 'add' }}</span>
-            <span>{{ isSaving ? 'Saving' : 'Launch' }}</span>
-          </button>
+            <button @click="createCategory" :disabled="isSaving" class="flex-grow sm:flex-initial bg-slate-950 text-white h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center space-x-2 shadow-xl hover:bg-primary-600 transition-all shrink-0 disabled:opacity-50">
+              <span class="material-icons text-sm">{{ isSaving ? 'sync' : 'add' }}</span>
+              <span>{{ isSaving ? 'Launch' : 'Launch' }}</span>
+            </button>
+          </div>
         </div>
       </header>
 
